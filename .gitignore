@@ -1,0 +1,12 @@
+# Dependencies and generated typings
+node_modules/
+@girs/
+
+# Generated output
+dist/
+build/
+.cache/
+*.log
+*.tsbuildinfo
+
+/global

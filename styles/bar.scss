@@ -1,0 +1,214 @@
+@use "sass:string";
+@use "../global/css/" as *;
+
+window.Bar {
+    background-color: transparent;
+    color: gtkify(text);
+    padding: 8px 10px 5px;
+}
+
+.bar-layout,
+.bar-date {
+    background-color: transparent;
+}
+
+.bar-pill,
+menubutton.date-button > button {
+    background-color: gtkify(mantle, 0.82);
+    border: 1px solid gtkify(text, 0.08);
+    border-radius: 16px;
+    box-shadow: 0px 3px 12px gtkify(crust, 0.34);
+}
+
+.bar-pill {
+    padding: 4px;
+}
+
+menubutton.date-button > button {
+    min-height: 34px;
+    padding: 5px 14px;
+    transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+menubutton.date-button > button:hover {
+    background-color: gtkify(surface0, 0.9);
+    border-color: gtkify(text, 0.14);
+}
+
+button {
+    min-height: 32px;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: gtkify(text);
+    padding: 0px 9px;
+    transition: background-color 140ms ease, box-shadow 140ms ease;
+}
+
+button:hover {
+    background-color: gtkify(text, 0.055);
+    box-shadow: inset 0px 0px 0px 1px gtkify(text, 0.055);
+}
+
+button:active {
+    background-color: gtkify(text, 0.1);
+}
+
+button:focus-visible {
+    box-shadow: inset 0px 0px 0px 1px gtkify(mauve, 0.5);
+}
+
+.date-content {
+    padding: 0px 3px;
+}
+
+.date-label {
+    color: gtkify(subtext0);
+    font-size: 0.78em;
+}
+
+.time-label {
+    color: gtkify(mauve);
+    font-size: 1.02em;
+}
+
+.icon {
+    color: gtkify(subtext1);
+    font-size: 20px;
+    opacity: 0.78;
+    transition: color 140ms ease, opacity 140ms ease;
+}
+
+button:hover .icon {
+    color: gtkify(text);
+    opacity: 1;
+}
+
+.system-section {
+    background-color: gtkify(surface0, 0.34);
+}
+
+popover > contents {
+    background-color: gtkify(mantle, 0.96);
+    border: 1px solid gtkify(text, 0.09);
+    border-radius: 15px;
+    box-shadow: 0px 8px 24px gtkify(crust, 0.62);
+    padding: 8px;
+}
+
+popover > arrow {
+    background-color: gtkify(mantle, 0.96);
+    border-color: gtkify(text, 0.09);
+}
+
+tooltip.background {
+    background-color: gtkify(crust, 0.95);
+    border: 1px solid gtkify(text, 0.1);
+    border-radius: 9px;
+    box-shadow: 0px 4px 12px gtkify(crust, 0.5);
+}
+
+tooltip label {
+    color: gtkify(text);
+    padding: 4px 6px;
+}
+
+.audio-section:not(:last-child) {
+    margin-bottom: 4px;
+}
+
+.audio-section-title {
+    color: gtkify(subtext0);
+    font-size: 0.86em;
+    font-weight: 600;
+    margin: 3px 0px;
+}
+
+.audio-disclosure-row {
+    min-height: 30px;
+    background-color: gtkify(surface0, 0.34);
+    border-radius: 9px;
+    padding: 0px 8px;
+}
+
+.audio-disclosure-row image {
+    opacity: 0.7;
+    transition: opacity 140ms ease;
+}
+
+.audio-disclosure-row:hover image {
+    opacity: 1;
+}
+
+.audio-selected-row > .volume-slider {
+    margin: 0px 8px;
+}
+
+.audio-dropdown {
+    background-color: gtkify(base, 0.5);
+    border-radius: 10px;
+    margin: 4px 0px;
+    padding: 3px;
+}
+
+.audio-dropdown > .device-option {
+    border-radius: 8px;
+    padding: 4px 8px;
+}
+
+.audio-dropdown > .device-option:hover {
+    background-color: gtkify(text, 0.055);
+}
+
+.volume-slider {
+    min-width: 200px;
+    padding: 4px 0px;
+}
+
+.volume-label {
+    color: gtkify(text);
+    font-feature-settings: "tnum";
+    font-weight: 800;
+    text-shadow: 0px 1px 1px gtkify(crust), 0px 0px 3px gtkify(crust);
+}
+
+.volume-slider trough {
+    min-height: 20px;
+    background-color: gtkify(crust, 0.78);
+    border-radius: 1000px;
+}
+
+.volume-slider marks.bottom {
+    margin-top: 2px;
+}
+
+.volume-slider marks.bottom indicator {
+    min-width: 2px;
+    min-height: 4px;
+    background-color: gtkify(subtext0, 0.55);
+    border-radius: 2px;
+}
+
+.volume-slider highlight {
+    background-color: gtkify(sky);
+    border-radius: 0px;
+}
+
+.volume-slider:active highlight,
+.adjust-volume highlight {
+    background-color: gtkify(mauve);
+}
+
+.volume-slider slider {
+    min-width: 14px;
+    min-height: 14px;
+    background-color: gtkify(text);
+    border: 2px solid gtkify(sky);
+    border-radius: 1000px;
+    opacity: 0;
+}
+
+.volume-slider:active slider,
+.adjust-volume slider {
+    border-color: gtkify(mauve);
+}
