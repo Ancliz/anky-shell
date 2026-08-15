@@ -277,13 +277,14 @@ function VolumeSection<T extends Wp.Node>({ visible, title, pinned, others, disc
         <box class="audio-section" visible={visible} orientation={Gtk.Orientation.VERTICAL}>
 
             <label class="audio-section-title" label={title}/>
-
-            <With value={pinned}>
-                {node => node
-                    ? <SelectedVolumeRow node={node} hasOptions={hasOthers} disclosure={disclosure}/>
-                    : <DisclosureButton hasOptions={hasOthers} disclosure={disclosure}/>
-                }
-            </With>
+            <box>            
+                <With value={pinned}>
+                    { node => node
+                        ? <SelectedVolumeRow node={node} hasOptions={hasOthers} disclosure={disclosure}/>
+                        : <DisclosureButton hasOptions={hasOthers} disclosure={disclosure}/>
+                    }
+                </With>
+            </box>
 
             <Gtk.Revealer revealChild={disclosure.expanded} transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}>
                 <box class="audio-dropdown" orientation={Gtk.Orientation.VERTICAL}>
