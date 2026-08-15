@@ -18,15 +18,13 @@ import { handleClick } from "../../util/click"
 const wp = Wp.get_default()!
 const audio = wp.audio
 const POPOVER_WIDTH = 480
-const MAX_VOLUME = 1.5
-
-const clampVolume = (value: number) => Math.max(0, Math.min(MAX_VOLUME, value))
-
+const MAX_VOLUME_DISPLAY = 1
+const VOLUME_MULTIPLIER = 1.5
 
 // Output devices
 
 const defaultSpeaker = createBinding(audio, "defaultSpeaker")
-    .as((speaker): Wp.Endpoint | null => speaker ?? null)
+.as((speaker): Wp.Endpoint | null => speaker ?? null)
 
 const speakers = createBinding(audio, "speakers")
     .as((items): Wp.Endpoint[] => items ?? [])
@@ -59,6 +57,7 @@ const otherMicrophones = createComputed<Wp.Endpoint[]>(() => {
 
 const volume = createBinding(audio, "defaultSpeaker", "volume")
 const mute = createBinding(audio, "defaultSpeaker", "mute")
+const outputLevel = volume(v => Math.round((v / VOLUME_MULTIPLIER) * 100))
 
 const icon = createMemo(() => {
     if(mute())
@@ -101,7 +100,7 @@ function toggleMute() {
 
 function changeDefaultVolume(delta: number) {
     const speaker = audio.defaultSpeaker
-    speaker.set_volume(clampVolume(speaker.volume + delta))
+    speaker.set_volume(speaker.volume + delta)
 }
 
 function openPAV() {
@@ -159,7 +158,7 @@ export default function AudioButton({ class: className = "" }) {
                 }}
             />
 
-            <label class="icon" label={icon} tooltipText={volume(value => `${Math.round((value ?? 0) * 100)}%`)}/>
+            <label class="icon" label={icon} tooltipText={outputLevel(v => `${v}%`)}/>
 
             <popover class="audio-popover" onClosed={collapseAll}>
                 <box widthRequest={POPOVER_WIDTH} orientation={Gtk.Orientation.VERTICAL}>
@@ -363,7 +362,7 @@ function VolumeRow({ node }: { node: Wp.Node }) {
 }
 
 function VolumeSlider({ node }: { node: Wp.Node }) {
-    const level = createBinding(node, "volume")
+    const level = createBinding(node, "volume")(volume => volume / VOLUME_MULTIPLIER)
     let slider: Astal.Slider
     let label: Gtk.Inscription | undefined
     let timer: ReturnType<typeof setTimeout> | undefined
@@ -401,7 +400,7 @@ function VolumeSlider({ node }: { node: Wp.Node }) {
             timer = undefined
         }, 150)
 
-        node.set_volume(value)
+        node.set_volume(value * VOLUME_MULTIPLIER)
 
         return false
     }
@@ -409,14 +408,11 @@ function VolumeSlider({ node }: { node: Wp.Node }) {
     return (
         <overlay class="volume-slider-container">
             <slider
-                $={(self) => {
-                    slider = self
-                    self.add_mark(1, Gtk.PositionType.BOTTOM, null)
-                }}
+                $={(self) => { slider = self }}
                 class="volume-slider"
                 hexpand
                 min={0}
-                max={MAX_VOLUME}
+                max={MAX_VOLUME_DISPLAY}
                 step={0.01}
                 value={level}
                 onValueChanged={positionLabel}
