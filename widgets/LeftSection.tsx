@@ -8,8 +8,20 @@ import Apps from "gi://AstalApps"
 
 const apps = new Apps.Apps()
 const hyprland = AstalHyprland.get_default()
-const clients = createBinding(hyprland, "clients")
-const clientMonitorMap = clients(ca => groupBy(ca, c => c.monitor.id))
+
+const groupClients = () =>
+    [...groupBy(hyprland.clients, c => c.workspace.monitor.id)]
+        .sort(([a], [b]) =>
+            hyprland.get_monitor(a).x - hyprland.get_monitor(b).x
+        )
+
+const clientMonitorMap =  createConnection(
+    groupClients(),
+    [hyprland, "client-added",   () => groupClients()],
+    [hyprland, "client-removed", () => groupClients()],
+    [hyprland, "client-moved",   () => groupClients()],
+    [hyprland, "event", (event, _, current) => event === "activespecial" ? groupClients() : current]
+)
 
 const customClasses = {
     spbtop: "foot"
@@ -34,13 +46,13 @@ export default function LeftSection() {
             <LauncherButton/>
             <For each={clientMonitorMap}>
                 {([_, clientArray], index) => (
-                    <box>
+                    <box class="monitor-clients">
                         { clientArray.map(client => (
                             <button onClicked={() => focus(client)}>
                                 <image pixelSize={30} class="client-icon" icon-name={getIcon(client)}/>
                             </button>
                             ))}
-                        { index() < clientMonitorMap().size - 1
+                        { index() < clientMonitorMap().length - 1
                           &&
                           (<label class="monitor-client-delimiter" label="|"/>)}
                     </box>
