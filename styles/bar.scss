@@ -84,6 +84,12 @@ button:hover .icon {
     opacity: 1;
 }
 
+.notification-icon.active,
+button:hover .notification-icon.active {
+    color: gtkify(mauve);
+    opacity: 1;
+}
+
 .system-section {
     background-color: gtkify(surface0, 0.34);
 }

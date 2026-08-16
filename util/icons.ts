@@ -1,9 +1,12 @@
 export const notifications = {
         "none": "󰂜",
         "unread": "󰂚",
+        "unread-2": "󱅫",
         "new": "󰂝",
         "mute-unread": "󰂛",
-        "dnd": "󰂠"
+        "dnd-notification": "󰂠",
+        "dnd-none": "󰪓",
+        "inhibited-none": "󰪑"
     }
 
 export const network = {
