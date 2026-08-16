@@ -103,21 +103,15 @@ export default function LeftSection() {
 
     function laterIfCurrent(item: ClientItem, generation: number, delay: number, callback: () => void) {
         later(() => {
-            if (item.generation === generation)
+            if(item.generation === generation)
                 callback()
         }, delay)
     }
 
 function open(item: ClientItem) {
     const generation = beginTransition(item, "opening")
-
-    laterIfCurrent(item, generation, 0, () =>
-        item.setRevealed(true)
-    )
-
-    laterIfCurrent(item, generation, ANIMATION_TIME, () =>
-        item.setPhase("idle")
-    )
+    laterIfCurrent(item, generation, 0, () => item.setRevealed(true))
+    laterIfCurrent(item, generation, ANIMATION_TIME, () => item.setPhase("idle"))
 }
 
 function close(item: ClientItem) {
@@ -125,9 +119,7 @@ function close(item: ClientItem) {
 
     laterIfCurrent(item, generation, ANIMATION_TIME, () => {
         itemsByAddress.delete(item.client.address)
-        setClientItems(items =>
-            items.filter(current => current !== item)
-        )
+        setClientItems(items => items.filter(current => current !== item))
     })
 }
 
@@ -137,76 +129,60 @@ function move(item: ClientItem, monitorId: number) {
     laterIfCurrent(item, generation, ANIMATION_TIME, () => {
         item.setMonitorId(monitorId)
         item.setPhase("moving-in")
-
-        laterIfCurrent(item, generation, 0, () =>
-            item.setRevealed(true)
-        )
-
-        laterIfCurrent(item, generation, ANIMATION_TIME, () =>
-            item.setPhase("idle")
-        )
+        laterIfCurrent(item, generation, 0, () => item.setRevealed(true))
+        laterIfCurrent(item, generation, ANIMATION_TIME, () => item.setPhase("idle"))
     })
 }
 
     createEffect(() => {
-        const actualClients = new Map<
-            string,
-            { client: AstalHyprland.Client; monitorId: number }
-        >()
+        const actualClients = new Map<string, { client: AstalHyprland.Client; monitorId: number }>()
 
-        for (const [monitorId, clients] of clientMonitorMap()) {
-            for (const client of clients)
+        for(const [monitorId, clients] of clientMonitorMap()) {
+            for(const client of clients)
                 actualClients.set(client.address, { client, monitorId })
         }
 
-        for (const [address, actual] of actualClients) {
+        for(const [address, actual] of actualClients) {
             const item = itemsByAddress.get(address)
 
-            if (!item) {
+            if(!item) {
                 const newItem = createClientItem(actual.client)
 
                 itemsByAddress.set(address, newItem)
                 setClientItems(items => [...items, newItem])
                 open(newItem)
-            } else if (item.monitorId.peek() !== actual.monitorId) {
+            } else if(item.monitorId.peek() !== actual.monitorId) {
                 move(item, actual.monitorId)
             }
         }
 
-        for (const [address, item] of itemsByAddress) {
-            if (
-                !actualClients.has(address)
-                && item.phase.peek() !== "closing"
-            ) {
+        for(const [address, item] of itemsByAddress) {
+            if(!actualClients.has(address) && item.phase.peek() !== "closing") {
                 close(item)
             }
         }
     })
 
     function clientsOnMonitor(monitorId: number) {
-        return createComputed(() =>
-            clientItems().filter(
-                item => item.monitorId() === monitorId
-            )
-        )
+        return createComputed(() => clientItems().filter(item => item.monitorId() === monitorId))
     }
 
     const renderedMonitors = createComputed(() => {
-    const orderedMonitors = monitors()
-    const occupied = new Set(clientItems().map(item => item.monitorId()))
+        const orderedMonitors = monitors()
+        const occupied = new Set(clientItems().map(item => item.monitorId()))
 
-    let lastOccupied = -1
+        let lastOccupied = -1
 
-    for(let index = 0; index < orderedMonitors.length; ++index) {
-        if(occupied.has(orderedMonitors[index].id))
-            lastOccupied = index
-    }
+        for(let index = 0; index < orderedMonitors.length; ++index) {
+            if(occupied.has(orderedMonitors[index].id))
+                lastOccupied = index
+        }
 
-    return orderedMonitors.slice(0, lastOccupied + 1)
-})
+        return orderedMonitors.slice(0, lastOccupied + 1)
+    })
 
     onCleanup(() => {
-        for (const timer of timers)
+        for(const timer of timers)
             clearTimeout(timer)
     })
 
