@@ -177,14 +177,18 @@ export default function LeftSection() {
 
             if(!item) {
                 const newItem = createClientItem(actual.client)
-
                 itemsByAddress.set(address, newItem)
                 setClientItems(items => [...items, newItem])
                 open(newItem)
             } else if(item.phase.peek() === "closing") {
+
+                // Reuse it so stale timers cannot remove a quickly reopened client
+                // A client can reappear before close() finishes, so reuse its item instead of duplicating it
                 item.client = actual.client
                 item.targetMonitorId = actual.monitorId
                 item.setMonitorId(actual.monitorId)
+
+                // open() increments its generation to invalidate close timers, then restarts its animation
                 open(item)
             } else if(item.targetMonitorId !== actual.monitorId) {
                 move(item, actual.monitorId)
