@@ -215,7 +215,47 @@ tooltip label {
 
 // Client list
 
+$client-shake: 75deg;
+
+@keyframes client-grow {
+    0%   { opacity: 0;    transform: scale(0.18) rotate($client-shake * -1); }
+    18%  { opacity: 0.5;  transform: scale(0.42) rotate($client-shake * 0.7); }
+    35%  { opacity: 0.78; transform: scale(0.6)  rotate($client-shake * -0.48); }
+    51%  { opacity: 0.94; transform: scale(0.74) rotate($client-shake * 0.3); }
+    66%  { opacity: 1;    transform: scale(0.85) rotate($client-shake * -0.17); }
+    79%  { transform: scale(0.93) rotate($client-shake * 0.08); }
+    90%  { transform: scale(0.98) rotate($client-shake * -0.025); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.client.revealing .client-icon,
+.client.moving-reveal .client-icon {
+    opacity: 0;
+}
+
+.client.opening .client-icon,
+.client.closing .client-icon,
+.client.moving-in .client-icon,
+.client.moving-out .client-icon {
+    animation: client-grow var(--client-open-time) linear both;
+    transform-origin: center;
+}
+
+.client.closing .client-icon {
+    animation-duration: var(--client-close-time);
+}
+
+.client.moving-in .client-icon,
+.client.moving-out .client-icon {
+    animation-duration: var(--client-move-time);
+}
+
+.client.closing .client-icon,
+.client.moving-out .client-icon {
+    animation-direction: reverse;
+}
+
 .monitor-client-delimiter {
     font-size: 20px;
-    font-weight: 900px;
+    font-weight: 600;
 }

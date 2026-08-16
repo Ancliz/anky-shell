@@ -7,9 +7,21 @@ import Apps from "gi://AstalApps"
 import { Gtk } from "ags/gtk4"
 
 
+type TimingMode = "sequential" | "simultaneous"
+type Phase = "revealing" | "opening" | "idle" | "closing" | "moving-reveal" | "moving-in" | "moving-out"
+type ClientItem = ReturnType<typeof createClientItem>
+
 const apps = new Apps.Apps()
 const hyprland = AstalHyprland.get_default()
-const ANIMATION_TIME = 180
+const OPEN_ICON_TIME = 350
+const CLOSE_ICON_TIME = 350
+const MOVE_ICON_TIME = 200
+const OPEN_REVEAL_TIME = 180
+const CLOSE_REVEAL_TIME = 180
+const MOVE_REVEAL_TIME = 110
+const OPEN_TIMING: TimingMode = "sequential"
+const CLOSE_TIMING: TimingMode = "sequential"
+const MOVE_TIMING: TimingMode = "simultaneous"
 
 const customClasses: Record<string, string> = {
     spbtop: "foot",
@@ -34,6 +46,9 @@ const monitors = createBinding(hyprland, "monitors").as(monitors =>
     monitors.toSorted((a, b) => a.x - b.x)
 )
 
+const waitFor = (mode: TimingMode, duration: number) => mode === "sequential" ? duration : 0
+
+
 function getIcon(client: AstalHyprland.Client) {
     const className = client.get_class()
     const query = customClasses[className] ?? className
@@ -44,11 +59,9 @@ function focus(client: AstalHyprland.Client) {
     hyprland.dispatch(`hl.dsp.focus({ window = "address:0x${client.get_address()}" })`, "")
 }
 
-type Phase = "opening" | "idle" | "closing" | "moving-in" | "moving-out"
-
 function createClientItem(client: AstalHyprland.Client, initiallyVisible = false) {
     const [monitorId, setMonitorId] = createState(client.workspace.monitor.id)
-    const [phase, setPhase] = createState<Phase>(initiallyVisible ? "idle" : "opening")
+    const [phase, setPhase] = createState<Phase>(initiallyVisible ? "idle" : "revealing")
     const [revealed, setRevealed] = createState(initiallyVisible)
     return {
         client,
@@ -58,18 +71,22 @@ function createClientItem(client: AstalHyprland.Client, initiallyVisible = false
         setPhase,
         revealed,
         setRevealed,
+        targetMonitorId: client.workspace.monitor.id,
         generation: 0
     }
 }
 
-type ClientItem = ReturnType<typeof createClientItem>
+function revealTime(phase: Phase) {
+    if(phase === "closing") return CLOSE_REVEAL_TIME
+    return phase.startsWith("moving") ? MOVE_REVEAL_TIME : OPEN_REVEAL_TIME
+}
 
 function AnimatedClient({ item } : { item: ClientItem }) {
     return (
         <revealer
             class="client-slot"
             transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
-            transitionDuration={ANIMATION_TIME}
+            transitionDuration={item.phase(revealTime)}
             revealChild={item.revealed}
         >
             <button class={item.phase(p => `client ${p}`)} onClicked={() => focus(item.client)}>
@@ -97,7 +114,6 @@ export default function LeftSection() {
     function beginTransition(item: ClientItem, phase: Phase) {
         const generation = ++item.generation
         item.setPhase(phase)
-        item.setRevealed(false)
         return generation
     }
 
@@ -108,31 +124,45 @@ export default function LeftSection() {
         }, delay)
     }
 
-function open(item: ClientItem) {
-    const generation = beginTransition(item, "opening")
-    laterIfCurrent(item, generation, 0, () => item.setRevealed(true))
-    laterIfCurrent(item, generation, ANIMATION_TIME, () => item.setPhase("idle"))
-}
+    function open(item: ClientItem) {
+        const generation = beginTransition(item, "revealing")
+        const iconDelay = waitFor(OPEN_TIMING, OPEN_REVEAL_TIME)
+        const total = Math.max(OPEN_REVEAL_TIME, iconDelay + OPEN_ICON_TIME)
 
-function close(item: ClientItem) {
-    const generation = beginTransition(item, "closing")
-
-    laterIfCurrent(item, generation, ANIMATION_TIME, () => {
-        itemsByAddress.delete(item.client.address)
-        setClientItems(items => items.filter(current => current !== item))
-    })
-}
-
-function move(item: ClientItem, monitorId: number) {
-    const generation = beginTransition(item, "moving-out")
-
-    laterIfCurrent(item, generation, ANIMATION_TIME, () => {
-        item.setMonitorId(monitorId)
-        item.setPhase("moving-in")
         laterIfCurrent(item, generation, 0, () => item.setRevealed(true))
-        laterIfCurrent(item, generation, ANIMATION_TIME, () => item.setPhase("idle"))
-    })
-}
+        laterIfCurrent(item, generation, iconDelay, () => item.setPhase("opening"))
+        laterIfCurrent(item, generation, total, () => item.setPhase("idle"))
+    }
+
+    function close(item: ClientItem) {
+        const generation = beginTransition(item, "closing")
+        const revealDelay = waitFor(CLOSE_TIMING, CLOSE_ICON_TIME)
+        const total = Math.max(CLOSE_ICON_TIME, revealDelay + CLOSE_REVEAL_TIME)
+
+        laterIfCurrent(item, generation, revealDelay, () => item.setRevealed(false))
+        laterIfCurrent(item, generation, total, () => {
+            itemsByAddress.delete(item.client.address)
+            setClientItems(items => items.filter(current => current !== item))
+        })
+    }
+
+    function move(item: ClientItem, monitorId: number) {
+        const generation = beginTransition(item, "moving-out")
+        const revealDelay = waitFor(MOVE_TIMING, MOVE_ICON_TIME)
+        const iconDelay = waitFor(MOVE_TIMING, MOVE_REVEAL_TIME)
+        const moveOutTime = Math.max(MOVE_ICON_TIME, revealDelay + MOVE_REVEAL_TIME)
+        const moveInTime = Math.max(MOVE_REVEAL_TIME, iconDelay + MOVE_ICON_TIME)
+        item.targetMonitorId = monitorId
+
+        laterIfCurrent(item, generation, revealDelay, () => item.setRevealed(false))
+        laterIfCurrent(item, generation, moveOutTime, () => {
+            item.setMonitorId(monitorId)
+            item.setPhase("moving-reveal")
+            laterIfCurrent(item, generation, 0, () => item.setRevealed(true))
+            laterIfCurrent(item, generation, iconDelay, () => item.setPhase("moving-in"))
+            laterIfCurrent(item, generation, moveInTime, () => item.setPhase("idle"))
+        })
+    }
 
     createEffect(() => {
         const actualClients = new Map<string, { client: AstalHyprland.Client; monitorId: number }>()
@@ -151,7 +181,12 @@ function move(item: ClientItem, monitorId: number) {
                 itemsByAddress.set(address, newItem)
                 setClientItems(items => [...items, newItem])
                 open(newItem)
-            } else if(item.monitorId.peek() !== actual.monitorId) {
+            } else if(item.phase.peek() === "closing") {
+                item.client = actual.client
+                item.targetMonitorId = actual.monitorId
+                item.setMonitorId(actual.monitorId)
+                open(item)
+            } else if(item.targetMonitorId !== actual.monitorId) {
                 move(item, actual.monitorId)
             }
         }
@@ -187,7 +222,13 @@ function move(item: ClientItem, monitorId: number) {
     })
 
     return (
-        <box class="apps-bar" spacing={0}>
+        <box
+            class="apps-bar"
+            css={`--client-open-time: ${OPEN_ICON_TIME}ms;
+                  --client-close-time: ${CLOSE_ICON_TIME}ms;
+                  --client-move-time: ${MOVE_ICON_TIME}ms;`}
+            spacing={0}
+        >
             <LauncherButton/>
             <For each={renderedMonitors}>
                 {(monitor, index) => (
