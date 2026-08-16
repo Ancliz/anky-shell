@@ -203,17 +203,11 @@ export default function LeftSection() {
     }
 
     const renderedMonitors = createComputed(() => {
-        const orderedMonitors = monitors()
-        const occupied = new Set(clientItems().map(item => item.monitorId()))
-
-        let lastOccupied = -1
-
-        for(let index = 0; index < orderedMonitors.length; ++index) {
-            if(occupied.has(orderedMonitors[index].id))
-                lastOccupied = index
-        }
-
-        return orderedMonitors.slice(0, lastOccupied + 1)
+        const items = clientItems()
+        const last = monitors().findLastIndex(monitor =>
+            items.some(item => item.monitorId() === monitor.id)
+        )
+        return monitors().slice(0, last + 1)
     })
 
     onCleanup(() => {
