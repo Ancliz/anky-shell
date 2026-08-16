@@ -12,7 +12,8 @@ const hyprland = AstalHyprland.get_default()
 const ANIMATION_TIME = 180
 
 const customClasses: Record<string, string> = {
-    spbtop: "foot"
+    spbtop: "foot",
+    spterm: "foot"
 }
 
 const groupClients = () =>
