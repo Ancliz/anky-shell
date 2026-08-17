@@ -248,8 +248,8 @@ export default function LeftSection() {
 
 function LauncherButton() {
     return (
-        <button onClicked={() => execAsync("bash -c $HOME/configs/waybar/scripts/applauncher.sh")}>
-            <label class="icon" label={system["dots-grid"]}/>
+        <button class="applauncher-button" onClicked={() => execAsync("bash -c $HOME/configs/waybar/scripts/applauncher.sh")}>
+            <label class="applauncher-icon" label={system["dots-grid"]}/>
         </button>
     )
 }

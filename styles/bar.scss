@@ -1,10 +1,13 @@
 @use "sass:string";
 @use "../global/css/" as *;
 
+$bar-font-size: 14px;
+
 window.Bar {
     background-color: transparent;
     color: gtkify(text);
     padding: 8px 10px 5px;
+    font-size: $bar-font-size;
 }
 
 .bar-layout,
@@ -24,6 +27,79 @@ menubutton.date-button > button {
     padding: 4px;
 }
 
+
+// App Launcher Button
+
+.applauncher-button {
+    transition: background-color 140ms ease;
+}
+
+.applauncher-button:hover {
+    background-color: gtkify(mauve);
+}
+
+.applauncher-icon {
+    color: gtkify(subtext1);
+    font-size: 2.50em;
+    opacity: 0.78;
+    transition: color 140ms ease;
+}
+
+.applauncher-icon:hover {
+    color: white;
+}
+
+
+// Client list
+
+$client-shake: 75deg;
+
+@keyframes client-grow {
+    0%   { opacity: 0;    transform: scale(0.18) rotate($client-shake * -1); }
+    18%  { opacity: 0.5;  transform: scale(0.42) rotate($client-shake * 0.7); }
+    35%  { opacity: 0.78; transform: scale(0.6)  rotate($client-shake * -0.48); }
+    51%  { opacity: 0.94; transform: scale(0.74) rotate($client-shake * 0.3); }
+    66%  { opacity: 1;    transform: scale(0.85) rotate($client-shake * -0.17); }
+    79%  { transform: scale(0.93) rotate($client-shake * 0.08); }
+    90%  { transform: scale(0.98) rotate($client-shake * -0.025); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.client.revealing .client-icon,
+.client.moving-reveal .client-icon {
+    opacity: 0;
+}
+
+.client.opening .client-icon,
+.client.closing .client-icon,
+.client.moving-in .client-icon,
+.client.moving-out .client-icon {
+    animation: client-grow var(--client-open-time) linear both;
+    transform-origin: center;
+}
+
+.client.closing .client-icon {
+    animation-duration: var(--client-close-time);
+}
+
+.client.moving-in .client-icon,
+.client.moving-out .client-icon {
+    animation-duration: var(--client-move-time);
+}
+
+.client.closing .client-icon,
+.client.moving-out .client-icon {
+    animation-direction: reverse;
+}
+
+.monitor-client-delimiter {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+
+// Centre
+
 menubutton.date-button > button {
     min-height: 34px;
     padding: 5px 14px;
@@ -34,6 +110,9 @@ menubutton.date-button > button:hover {
     background-color: gtkify(surface0, 0.9);
     border-color: gtkify(text, 0.14);
 }
+
+
+// Right Section + General
 
 button {
     min-height: 32px;
@@ -64,17 +143,17 @@ button:focus-visible {
 
 .date-label {
     color: gtkify(subtext0);
-    font-size: 0.78em;
+    font-size: 0.9em;
 }
 
 .time-label {
     color: gtkify(mauve);
-    font-size: 1.02em;
+    font-size: 1.22em;
 }
 
 .icon {
     color: gtkify(subtext1);
-    font-size: 20px;
+    font-size: 1.86em;
     opacity: 0.78;
     transition: color 140ms ease, opacity 140ms ease;
 }
@@ -93,6 +172,9 @@ button:hover .notification-icon.active {
 .system-section {
     background-color: gtkify(surface0, 0.34);
 }
+
+
+// Audio Menu
 
 popover > contents {
     background-color: gtkify(mantle, 0.96);
@@ -217,51 +299,4 @@ tooltip label {
 .volume-slider:active slider,
 .adjust-volume slider {
     border-color: gtkify(mauve);
-}
-
-// Client list
-
-$client-shake: 75deg;
-
-@keyframes client-grow {
-    0%   { opacity: 0;    transform: scale(0.18) rotate($client-shake * -1); }
-    18%  { opacity: 0.5;  transform: scale(0.42) rotate($client-shake * 0.7); }
-    35%  { opacity: 0.78; transform: scale(0.6)  rotate($client-shake * -0.48); }
-    51%  { opacity: 0.94; transform: scale(0.74) rotate($client-shake * 0.3); }
-    66%  { opacity: 1;    transform: scale(0.85) rotate($client-shake * -0.17); }
-    79%  { transform: scale(0.93) rotate($client-shake * 0.08); }
-    90%  { transform: scale(0.98) rotate($client-shake * -0.025); }
-    100% { opacity: 1; transform: scale(1) rotate(0deg); }
-}
-
-.client.revealing .client-icon,
-.client.moving-reveal .client-icon {
-    opacity: 0;
-}
-
-.client.opening .client-icon,
-.client.closing .client-icon,
-.client.moving-in .client-icon,
-.client.moving-out .client-icon {
-    animation: client-grow var(--client-open-time) linear both;
-    transform-origin: center;
-}
-
-.client.closing .client-icon {
-    animation-duration: var(--client-close-time);
-}
-
-.client.moving-in .client-icon,
-.client.moving-out .client-icon {
-    animation-duration: var(--client-move-time);
-}
-
-.client.closing .client-icon,
-.client.moving-out .client-icon {
-    animation-direction: reverse;
-}
-
-.monitor-client-delimiter {
-    font-size: 20px;
-    font-weight: 600;
 }
