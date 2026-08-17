@@ -17,7 +17,7 @@ const networkMonitor = Gio.NetworkMonitor.get_default()
 
 const CPU_POLL_INTERVAL = 2_000
 const RAM_POLL_INTERVAL = 5_000
-const CPU_VALUE_CHARS = 3
+const CPU_VALUE_CHARS = 4
 const MEMORY_VALUE_CHARS = 5
 const KIBIBYTE = 1_024
 const GIBIBYTE = KIBIBYTE ** 3
