@@ -3,8 +3,9 @@ import { Accessor, createExternal } from "ags"
 export function createDynamicPoll<T>(
     initial: T,
     interval: Accessor<number>,
-    poll: (previous: T) => T | Promise<T>,
+    poll: (previous: T) => T | Promise<T>
 ): Accessor<T> {
+        
     let current = initial
 
     return createExternal(initial, set => {

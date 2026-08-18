@@ -60,7 +60,7 @@ menubutton.date-button > button {
 
 .applauncher-icon {
     color: gtkify(subtext1);
-    font-size: 2.5em;
+    font-size: 2.50em;
     opacity: 0.78;
     transition: color 140ms ease;
 }
@@ -328,5 +328,150 @@ tooltip label {
 
 .volume-slider:active slider,
 .adjust-volume slider {
-    border-color: gtkify(mauve);
+    border-color: accent();
+}
+
+
+// Settings OSD
+
+window.SettingsOSD {
+    background-color: transparent;
+    color: gtkify(text);
+    font-size: $bar-font-size;
+}
+
+.settings-panel {
+    min-width: 560px;
+    background-color: gtkify(mantle, 0.98);
+    border: 1px solid gtkify(text, 0.1);
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.settings-header {
+    margin-bottom: 12px;
+}
+
+.settings-title {
+    color: gtkify(text);
+    font-size: 1.35em;
+    font-weight: 700;
+}
+
+.settings-close {
+    min-width: 34px;
+    padding: 0px;
+}
+
+.settings-grid {
+    margin-top: 2px;
+}
+
+.settings-column {
+    min-width: 0px;
+}
+
+.settings-section-title {
+    color: accent();
+    font-size: 0.88em;
+    font-weight: 700;
+    margin: 4px 3px 0px;
+}
+
+.settings-row {
+    min-height: 48px;
+    background-color: gtkify(surface0, 0.34);
+    border: 1px solid gtkify(text, 0.055);
+    border-radius: 12px;
+    padding: 9px 12px;
+}
+
+.settings-row-label {
+    color: gtkify(text);
+    font-weight: 600;
+}
+
+.settings-description {
+    color: gtkify(subtext0);
+    font-size: 0.86em;
+}
+
+entry.settings-control,
+spinbutton.settings-control,
+dropdown.settings-control > button {
+    min-height: 32px;
+    background-color: gtkify(base, 0.72);
+    border: 1px solid gtkify(text, 0.09);
+    border-radius: 9px;
+    color: gtkify(text);
+    box-shadow: none;
+}
+
+entry.settings-control:focus,
+spinbutton.settings-control:focus-within,
+dropdown.settings-control > button:focus-visible {
+    border-color: accent(0.72);
+    box-shadow: 0px 0px 0px 2px accent(0.13);
+}
+
+dropdown.settings-control popover > contents {
+    border-radius: 12px;
+}
+
+.settings-format {
+    min-width: 145px;
+}
+
+.settings-preview {
+    background-color: gtkify(base, 0.58);
+    border-radius: 10px;
+    color: accent();
+    font-feature-settings: "tnum";
+    font-weight: 650;
+    margin-top: 10px;
+    padding: 9px 12px;
+}
+
+.settings-preview-date,
+.settings-preview-clock {
+    font-size: var(--bar-font-size, #{$bar-font-size});
+    font-weight: 700;
+}
+
+.settings-preview-date {
+    color: gtkify(subtext0);
+    font-size: calc(var(--bar-font-size, #{$bar-font-size}) * 0.9);
+}
+
+.settings-preview-clock {
+    color: accent();
+}
+
+.settings-actions {
+    margin-top: 14px;
+}
+
+.settings-reset {
+    color: gtkify(subtext1);
+}
+
+.settings-done {
+    background-color: accent();
+    border-color: accent();
+    color: var(--accent-text);
+    font-weight: 700;
+    padding: 0px 16px;
+}
+
+.settings-done:hover {
+    background-color: accent(0.88);
+    box-shadow: 0px 4px 12px accent(0.18);
+}
+
+.settings-button .icon {
+    transition: color 140ms ease, opacity 140ms ease, transform 180ms ease;
+}
+
+.settings-button:hover .icon {
+    transform: rotate(24deg);
 }

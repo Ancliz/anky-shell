@@ -25,7 +25,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
                 </box>
 
                 <box class="bar-pill bar-right" $type="end">
-                    <RightSection/>
+                    <RightSection gdkmonitor={gdkmonitor}/>
                 </box>
             </centerbox>
         </window>

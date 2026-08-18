@@ -92,6 +92,7 @@ export const web = {
 export const system = {
         "cpu": "󰍛",
         "memory": "󰘚",
+        "settings": "󰒓",
         "keyboard-control": "󰘴",
         "menu-down-outline": "󰚶",
         "power-standby": "󰤆",
