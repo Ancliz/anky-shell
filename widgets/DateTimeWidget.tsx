@@ -1,6 +1,12 @@
 import { Gtk } from "ags/gtk4"
 import { createMemo, createState, onCleanup } from "ags"
 
+import { setting } from "../config/settings"
+import { formatDate, hasSeconds, formatTime } from "../util/dateFormat"
+
+const dateFormat = setting("dateFormat")
+const timeFormat = setting("timeFormat")
+
 const baseTimeOptions = {
     hour: "2-digit",
     minute: "2-digit",
@@ -8,20 +14,9 @@ const baseTimeOptions = {
 } satisfies Intl.DateTimeFormatOptions
 
 const formatters = {
-    shortTime: new Intl.DateTimeFormat(
-        undefined,
-        baseTimeOptions,
-    ),
-
     longTime: new Intl.DateTimeFormat(undefined, {
         ...baseTimeOptions,
         second: "2-digit",
-    }),
-
-    date: new Intl.DateTimeFormat("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
     }),
 
     longDate: new Intl.DateTimeFormat("en-GB", {
@@ -43,8 +38,12 @@ function formatLongDate(date: Date): string {
 export default function DateTimeWidget() {
     const [calendarOpen, setCalendarOpen] = createState(false)
     const [now, setNow] = createState(new Date())
+    const tickEverySecond = createMemo(() =>
+        calendarOpen() || hasSeconds(timeFormat())
+    )
 
     let timer: ReturnType<typeof setTimeout> | undefined
+    let interval = 0
 
     function stopTimer() {
         if(timer !== undefined) {
@@ -55,7 +54,6 @@ export default function DateTimeWidget() {
 
     function tick() {
         const current = new Date()
-        const interval = calendarOpen.peek() ? 1_000 : 60_000
 
         // Align to the next exact second or minute boundary
         const delay = interval - (current.getTime() % interval)
@@ -65,26 +63,27 @@ export default function DateTimeWidget() {
         setNow(current)
     }
 
-    function restartTimer() {
+    function restartTimer(force = false) {
+        const next = tickEverySecond.peek() ? 1_000 : 60_000
+        if(!force && next === interval)
+            return
+
+        interval = next
         stopTimer()
         tick()
     }
 
-    const unsubscribe = calendarOpen.subscribe(restartTimer)
+    const unsubscribe = tickEverySecond.subscribe(restartTimer)
 
     onCleanup(() => {
         unsubscribe()
         stopTimer()
     })
 
-    restartTimer()
+    restartTimer(true)
 
-    /*
-     * shortTime only changes once per minute, even while `now`
-     * updates every second with the popover open
-     */
-    const shortTime = createMemo(() => formatters.shortTime.format(now()))
-    const date = createMemo(() => formatters.date.format(now()))
+    const shortTime = createMemo(() => formatTime(now(), timeFormat()))
+    const date = createMemo(() => formatDate(now(), dateFormat()))
     const longDate = createMemo(() => formatLongDate(now()))
     /*
      * When closed, this does not even read `now()`, so it stops

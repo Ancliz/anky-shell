@@ -4,8 +4,9 @@ import Hyprland from "gi://AstalHyprland"
 import { createBinding, createComputed, createState } from "ags"
 import { readFile } from "ags/file"
 import { Gtk } from "ags/gtk4"
-import { createPoll } from "ags/time"
 
+import { setting } from "../../config/settings"
+import { createDynamicPoll } from "../../util/dynamicPoll"
 import {
     network as networkIcons,
     system as systemIcons
@@ -14,11 +15,11 @@ import {
 
 const hyprland = Hyprland.get_default()
 const networkMonitor = Gio.NetworkMonitor.get_default()
+const cpuPollInterval = setting("cpuPollInterval")
+const ramPollInterval = setting("ramPollInterval")
+const cpuValueChars = setting("cpuValueChars")
+const memoryValueChars = setting("memoryValueChars")
 
-const CPU_POLL_INTERVAL = 2_000
-const RAM_POLL_INTERVAL = 5_000
-const CPU_VALUE_CHARS = 4
-const MEMORY_VALUE_CHARS = 5
 const KIBIBYTE = 1_024
 const GIBIBYTE = KIBIBYTE ** 3
 const CPU_SENSOR_NAMES = ["k10temp", "coretemp", "zenpower"]
@@ -144,15 +145,15 @@ const [networkRevision, setNetworkRevision] = createState(0)
 
 networkMonitor.connect("network-changed", () => setNetworkRevision(revision => revision + 1))
 
-const cpuStats = createPoll<CpuStats>(
+const cpuStats = createDynamicPoll<CpuStats>(
     { usage: 0, temperature: readCpuTemperature() },
-    CPU_POLL_INTERVAL,
+    cpuPollInterval,
     readCpuStats
 )
 
-const memoryStats = createPoll<MemoryStats>(
+const memoryStats = createDynamicPoll<MemoryStats>(
     readMemoryStats(),
-    RAM_POLL_INTERVAL,
+    ramPollInterval,
     readMemoryStats
 )
 
@@ -191,8 +192,8 @@ export default function SystemWidget() {
                 <box spacing={4}>
                     <label class="icon" label={systemIcons.cpu}/>
                     <Gtk.Inscription
-                        minChars={CPU_VALUE_CHARS}
-                        natChars={CPU_VALUE_CHARS}
+                        minChars={cpuValueChars}
+                        natChars={cpuValueChars}
                         xalign={1}
                         text={cpu}
                     />
@@ -203,8 +204,8 @@ export default function SystemWidget() {
                 <box spacing={4}>
                     <label class="icon" label={systemIcons.memory}/>
                     <Gtk.Inscription
-                        minChars={MEMORY_VALUE_CHARS}
-                        natChars={MEMORY_VALUE_CHARS}
+                        minChars={memoryValueChars}
+                        natChars={memoryValueChars}
                         xalign={1}
                         text={memory}
                     />

@@ -1,7 +1,7 @@
 import app from "ags/gtk4/app"
 import { Astal, Gdk } from "ags/gtk4"
 
-import DateTmeWidget from "./DateTimeWidget"
+import DateTimeWidget from "./DateTimeWidget"
 import LeftSection from "./LeftSection"
 import RightSection from "./right/RightSection"
 
@@ -18,7 +18,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
                 </box>
 
                 <box class="bar-date" $type="center">
-                    <DateTmeWidget/>
+                    <DateTimeWidget/>
                 </box>
 
                 <box class="bar-pill bar-right" $type="end">
