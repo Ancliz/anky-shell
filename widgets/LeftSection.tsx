@@ -1,27 +1,27 @@
 import { execAsync } from "ags/process"
 import { system } from "../util/icons"
 import { groupBy } from "../util/util"
-import { Accessor, createBinding, createComputed, createConnection, createEffect, createState, For, onCleanup } from "ags"
+import {
+    createBinding, createComputed, createConnection, createEffect,
+    createState, For, onCleanup
+} from "ags"
 import AstalHyprland from "gi://AstalHyprland"
 import Apps from "gi://AstalApps"
 import { Gtk } from "ags/gtk4"
 
+import {
+    getClientAnimation,
+    type ClientAnimationTiming,
+    type TimingMode
+} from "../config/animations"
+import { setting } from "../config/settings"
 
-type TimingMode = "sequential" | "simultaneous"
 type Phase = "revealing" | "opening" | "idle" | "closing" | "moving-reveal" | "moving-in" | "moving-out"
 type ClientItem = ReturnType<typeof createClientItem>
 
 const apps = new Apps.Apps()
 const hyprland = AstalHyprland.get_default()
-const OPEN_ICON_TIME = 350
-const CLOSE_ICON_TIME = 350
-const MOVE_ICON_TIME = 200
-const OPEN_REVEAL_TIME = 180
-const CLOSE_REVEAL_TIME = 180
-const MOVE_REVEAL_TIME = 110
-const OPEN_TIMING: TimingMode = "sequential"
-const CLOSE_TIMING: TimingMode = "sequential"
-const MOVE_TIMING: TimingMode = "simultaneous"
+const clientAnimation = setting("clientAnimation")
 
 const customClasses: Record<string, string> = {
     spbtop: "foot",
@@ -63,6 +63,8 @@ function createClientItem(client: AstalHyprland.Client, initiallyVisible = false
     const [monitorId, setMonitorId] = createState(client.workspace.monitor.id)
     const [phase, setPhase] = createState<Phase>(initiallyVisible ? "idle" : "revealing")
     const [revealed, setRevealed] = createState(initiallyVisible)
+    const initialRevealTime = getClientAnimation(clientAnimation.peek()).open.revealTime
+    const [revealDuration, setRevealDuration] = createState(initialRevealTime)
     return {
         client,
         monitorId,
@@ -71,14 +73,11 @@ function createClientItem(client: AstalHyprland.Client, initiallyVisible = false
         setPhase,
         revealed,
         setRevealed,
+        revealDuration,
+        setRevealDuration,
         targetMonitorId: client.workspace.monitor.id,
         generation: 0
     }
-}
-
-function revealTime(phase: Phase) {
-    if(phase === "closing") return CLOSE_REVEAL_TIME
-    return phase.startsWith("moving") ? MOVE_REVEAL_TIME : OPEN_REVEAL_TIME
 }
 
 function AnimatedClient({ item } : { item: ClientItem }) {
@@ -86,7 +85,7 @@ function AnimatedClient({ item } : { item: ClientItem }) {
         <revealer
             class="client-slot"
             transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
-            transitionDuration={item.phase(revealTime)}
+            transitionDuration={item.revealDuration}
             revealChild={item.revealed}
         >
             <button class={item.phase(p => `client ${p}`)} onClicked={() => focus(item.client)}>
@@ -111,8 +110,9 @@ export default function LeftSection() {
         timers.add(timer)
     }
 
-    function beginTransition(item: ClientItem, phase: Phase) {
+    function beginTransition(item: ClientItem, phase: Phase, transition: ClientAnimationTiming) {
         const generation = ++item.generation
+        item.setRevealDuration(transition.revealTime)
         item.setPhase(phase)
         return generation
     }
@@ -125,9 +125,10 @@ export default function LeftSection() {
     }
 
     function open(item: ClientItem) {
-        const generation = beginTransition(item, "revealing")
-        const iconDelay = waitFor(OPEN_TIMING, OPEN_REVEAL_TIME)
-        const total = Math.max(OPEN_REVEAL_TIME, iconDelay + OPEN_ICON_TIME)
+        const transition = getClientAnimation(clientAnimation.peek()).open
+        const generation = beginTransition(item, "revealing", transition)
+        const iconDelay = waitFor(transition.timing, transition.revealTime)
+        const total = Math.max(transition.revealTime, iconDelay + transition.iconTime)
 
         laterIfCurrent(item, generation, 0, () => item.setRevealed(true))
         laterIfCurrent(item, generation, iconDelay, () => item.setPhase("opening"))
@@ -135,9 +136,10 @@ export default function LeftSection() {
     }
 
     function close(item: ClientItem) {
-        const generation = beginTransition(item, "closing")
-        const revealDelay = waitFor(CLOSE_TIMING, CLOSE_ICON_TIME)
-        const total = Math.max(CLOSE_ICON_TIME, revealDelay + CLOSE_REVEAL_TIME)
+        const transition = getClientAnimation(clientAnimation.peek()).close
+        const generation = beginTransition(item, "closing", transition)
+        const revealDelay = waitFor(transition.timing, transition.iconTime)
+        const total = Math.max(transition.iconTime, revealDelay + transition.revealTime)
 
         laterIfCurrent(item, generation, revealDelay, () => item.setRevealed(false))
         laterIfCurrent(item, generation, total, () => {
@@ -147,11 +149,12 @@ export default function LeftSection() {
     }
 
     function move(item: ClientItem, monitorId: number) {
-        const generation = beginTransition(item, "moving-out")
-        const revealDelay = waitFor(MOVE_TIMING, MOVE_ICON_TIME)
-        const iconDelay = waitFor(MOVE_TIMING, MOVE_REVEAL_TIME)
-        const moveOutTime = Math.max(MOVE_ICON_TIME, revealDelay + MOVE_REVEAL_TIME)
-        const moveInTime = Math.max(MOVE_REVEAL_TIME, iconDelay + MOVE_ICON_TIME)
+        const transition = getClientAnimation(clientAnimation.peek()).move
+        const generation = beginTransition(item, "moving-out", transition)
+        const revealDelay = waitFor(transition.timing, transition.iconTime)
+        const iconDelay = waitFor(transition.timing, transition.revealTime)
+        const moveOutTime = Math.max(transition.iconTime, revealDelay + transition.revealTime)
+        const moveInTime = Math.max(transition.revealTime, iconDelay + transition.iconTime)
         item.targetMonitorId = monitorId
 
         laterIfCurrent(item, generation, revealDelay, () => item.setRevealed(false))
@@ -213,6 +216,7 @@ export default function LeftSection() {
         )
         return monitors().slice(0, last + 1)
     })
+    const className = clientAnimation(name => `apps-bar ${getClientAnimation(name).className}`)
 
     onCleanup(() => {
         for(const timer of timers)
@@ -220,13 +224,7 @@ export default function LeftSection() {
     })
 
     return (
-        <box
-            class="apps-bar"
-            css={`--client-open-time: ${OPEN_ICON_TIME}ms;
-                  --client-close-time: ${CLOSE_ICON_TIME}ms;
-                  --client-move-time: ${MOVE_ICON_TIME}ms;`}
-            spacing={0}
-        >
+        <box class={className} spacing={0}>
             <LauncherButton/>
             <For each={renderedMonitors}>
                 {(monitor, index) => (
@@ -248,7 +246,8 @@ export default function LeftSection() {
 
 function LauncherButton() {
     return (
-        <button class="applauncher-button" onClicked={() => execAsync("bash -c $HOME/configs/waybar/scripts/applauncher.sh")}>
+        <button class="applauncher-button"
+            onClicked={() => execAsync("bash -c $HOME/configs/waybar/scripts/applauncher.sh")}>
             <label class="applauncher-icon" label={system["dots-grid"]}/>
         </button>
     )
