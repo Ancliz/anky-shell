@@ -2,12 +2,32 @@
 @use "../global/css/" as *;
 
 $bar-font-size: 14px;
+$client-shake: 75deg;
+
+@function accent($opacity: null) {
+    @if $opacity == null {
+        @return string.unquote("var(--accent)");
+    }
+
+    @return string.unquote("alpha(var(--accent), #{$opacity})");
+}
+
+window.Bar,
+window.SettingsOSD {
+    --accent: #{gtkify(mauve)};
+    --accent-text: #{gtkify(crust)};
+}
+
+window.theme-mocha-lavender {
+    --accent: #{gtkify(lavender)};
+}
 
 window.Bar {
+    --bar-font-size: #{$bar-font-size};
     background-color: transparent;
     color: gtkify(text);
     padding: 8px 10px 5px;
-    font-size: $bar-font-size;
+    font-size: var(--bar-font-size);
 }
 
 .bar-layout,
@@ -35,12 +55,12 @@ menubutton.date-button > button {
 }
 
 .applauncher-button:hover {
-    background-color: gtkify(mauve);
+    background-color: accent();
 }
 
 .applauncher-icon {
     color: gtkify(subtext1);
-    font-size: 2.50em;
+    font-size: 2.5em;
     opacity: 0.78;
     transition: color 140ms ease;
 }
@@ -51,8 +71,6 @@ menubutton.date-button > button {
 
 
 // Client list
-
-$client-shake: 75deg;
 
 @keyframes client-grow {
     0%   { opacity: 0;    transform: scale(0.18) rotate($client-shake * -1); }
@@ -105,7 +123,7 @@ $client-shake: 75deg;
 }
 
 .monitor-client-delimiter {
-    font-size: 20px;
+    font-size: 1.43em;
     font-weight: 600;
 }
 
@@ -146,7 +164,7 @@ button:active {
 }
 
 button:focus-visible {
-    box-shadow: inset 0px 0px 0px 1px gtkify(mauve, 0.5);
+    box-shadow: inset 0px 0px 0px 1px accent(0.5);
 }
 
 .date-content {
@@ -159,7 +177,7 @@ button:focus-visible {
 }
 
 .time-label {
-    color: gtkify(mauve);
+    color: accent();
     font-size: 1.22em;
 }
 
@@ -177,7 +195,7 @@ button:hover .icon {
 
 .notification-icon.active,
 button:hover .notification-icon.active {
-    color: gtkify(mauve);
+    color: accent();
     opacity: 1;
 }
 
@@ -296,7 +314,7 @@ tooltip label {
 
 .volume-slider:active highlight,
 .adjust-volume highlight {
-    background-color: gtkify(mauve);
+    background-color: accent();
 }
 
 .volume-slider slider {
