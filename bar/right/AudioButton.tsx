@@ -12,7 +12,7 @@ import {
 } from "ags"
 import { execAsync } from "ags/process"
 import { audio as icons } from "../../util/icons"
-import { handleClick } from "../../util/click"
+import { handleClick } from "../../util/util"
 
 
 const wp = Wp.get_default()!

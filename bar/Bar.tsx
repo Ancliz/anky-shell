@@ -4,7 +4,7 @@ import { Astal, Gdk } from "ags/gtk4"
 import { setting } from "../config/settings"
 import { getTheme } from "../config/themes"
 import DateTimeWidget from "./DateTimeWidget"
-import LeftSection from "./LeftSection"
+import LeftSection from "./TaskBar"
 import RightSection from "./right/RightSection"
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {

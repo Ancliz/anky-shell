@@ -13,7 +13,7 @@ import {
     getClientAnimation,
     type ClientAnimationTiming,
     type TimingMode
-} from "../config/animations"
+} from "../config/bar/animations"
 import { setting } from "../config/settings"
 
 type Phase = "revealing" | "opening" | "idle" | "closing" | "moving-reveal" | "moving-in" | "moving-out"

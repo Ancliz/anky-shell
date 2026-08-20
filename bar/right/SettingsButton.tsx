@@ -1,6 +1,6 @@
 import { Gdk } from "ags/gtk4"
 
-import { openSettings } from "../../osd/settings/SettingsOSD"
+import { openSettings } from "../../osd/settings/Settings"
 import { system } from "../../util/icons"
 
 

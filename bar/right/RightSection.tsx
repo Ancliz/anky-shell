@@ -6,7 +6,7 @@ import NotificationButton from "./NotificationButton"
 import PowerButton from "./PowerUButton"
 import SettingsButton from "./SettingsButton"
 import SystemWidget from "./SystemWidget"
-import Tray from "./Tray"
+import Tray from "./TrayButton"
 
 export default function RightSection({ gdkmonitor: gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     return (

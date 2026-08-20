@@ -1,6 +1,6 @@
 import { Gtk } from "ags/gtk4"
 import { createSubprocess, execAsync } from "ags/process"
-import { handleClick } from "../../util/click"
+import { handleClick } from "../../util/util"
 import { notifications } from "../../util/icons"
 
 const icons = {

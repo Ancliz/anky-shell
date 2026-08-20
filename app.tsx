@@ -1,8 +1,8 @@
 import app from "ags/gtk4/app"
 
 import { initStyles } from "./config/styleManager"
-import SettingsOSD from "./osd/settings/SettingsOSD"
-import Bar from "./widgets/Bar"
+import SettingsOSD from "./osd/settings/Settings"
+import Bar from "./bar/Bar"
 
 app.start({
     main() {

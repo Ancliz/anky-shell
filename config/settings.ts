@@ -1,7 +1,7 @@
 import GLib from "gi://GLib"
 import { Accessor, createState } from "ags"
 import { readFile, writeFile } from "ags/file"
-import type { ClientAnimationName } from "./animations"
+import type { ClientAnimationName } from "./bar/animations"
 import type { ThemeName } from "./themes"
 
 export type Settings = {
