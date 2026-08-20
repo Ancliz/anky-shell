@@ -46,8 +46,10 @@ export const cast = {
     }
 
 export const communication = {
+        "reply-outline": "󰼠",
         "comment": "󰅺",
-        "discord": "󰙯"
+        "discord": "󰙯",
+        "twitch": "󰕃"
     }
 
 export const microphone = {
@@ -70,6 +72,7 @@ export const recording = {
     }
 
 export const audio = {
+        "tune-variant": "󱕂",
         "volume-high": "󰕾",
         "volume-low": "󰕿",
         "volume-medium": "󰖀",
@@ -93,6 +96,7 @@ export const system = {
         "cpu": "󰍛",
         "memory": "󰘚",
         "settings": "󰒓",
+        "keyboard": "󰌌",
         "keyboard-control": "󰘴",
         "menu-down-outline": "󰚶",
         "power-standby": "󰤆",
@@ -101,6 +105,10 @@ export const system = {
 
 export const navigation = {
         "fold-down": "",
+        "menu-down": "󰍝",
+        "menu-left": "󰍞",
+        "menu-right": "󰍟",
+        "menu-up": "󰍠",
         "triangle-down": "",
         "triangle-left": "",
         "triangle-right": "",
@@ -116,14 +124,30 @@ export const navigation = {
     }
 
 export const development = {
+        "console-line": "󰞷",
         "ros": "",
         "terminal": "",
         "powershell": ""
     }
 
 export const playback = {
+        "play": "󰐊",
+        "play-outline": "󰼛",
         "play-circle": "󰐌",
-        "play-circle-outline": "󰐍"
+        "play-circle-outline": "󰐍",
+        "play-speed": "󰣿",
+        "pause": "󰏤",
+        "pause-circle": "󰏥",
+        "pause-circle-outline": "󰏦",
+        "fast-forward-outline": "󰛒",
+        "rewind-outline": "󰜊",
+        "skip-backward-outline": "󰼥",
+        "skip-forward-outline": "󰼦",
+        "skip-next-circle": "󰙡",
+        "skip-next-outline": "󰼧",
+        "skip-previous-circle": "󰙣",
+        "skip-previous-circle-outline": "󰙤",
+        "skip-previous-outline": "󰼨"
     }
 
 export const server = {
@@ -137,5 +161,22 @@ export const server = {
 
 export const video = {
         "on": "󰕧",
-        "off": "󰕨"
+        "off": "󰕨",
+        "4k-box": "󰠾",
+        "high-definition-box": "󰡸"
+    }
+
+export const actions = {
+        "minus-circle": "󰍶",
+        "publish": "󰚧",
+        "upload": "󰕒"
+    }
+
+export const shapes = {
+        "circle-medium": "󰧞",
+        "circle-small": "󰧟"
+    }
+
+export const payments = {
+        "contactless-circle": "󰌡"
     }
