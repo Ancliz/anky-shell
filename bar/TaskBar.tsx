@@ -15,6 +15,7 @@ import {
     type TimingMode
 } from "../config/bar/animations"
 import { setting } from "../config/settings"
+import { focus } from "../util/hyprutil"
 
 type Phase = "revealing" | "opening" | "idle" | "closing" | "moving-reveal" | "moving-in" | "moving-out"
 type ClientItem = ReturnType<typeof createClientItem>
@@ -53,10 +54,6 @@ function getIcon(client: AstalHyprland.Client) {
     const className = client.get_class()
     const query = customClasses[className] ?? className
     return apps.fuzzy_query(query)[0]?.get_icon_name()
-}
-
-function focus(client: AstalHyprland.Client) {
-    hyprland.dispatch(`hl.dsp.focus({ window = "address:0x${client.get_address()}" })`, "")
 }
 
 function createClientItem(client: AstalHyprland.Client, initiallyVisible = false) {

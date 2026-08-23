@@ -9,5 +9,5 @@ app.start({
         initStyles()
         SettingsOSD()
         app.get_monitors().forEach(Bar)
-    },
+    }
 })

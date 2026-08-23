@@ -1,5 +1,4 @@
 import Gio from "gi://Gio"
-import Hyprland from "gi://AstalHyprland"
 
 import { createBinding, createComputed, createState } from "ags"
 import { readFile } from "ags/file"
@@ -11,9 +10,9 @@ import {
     network as networkIcons,
     system as systemIcons
 } from "../../util/icons"
+import { toggleSpecialWorkspace } from "../../util/hyprutil"
 
 
-const hyprland = Hyprland.get_default()
 const networkMonitor = Gio.NetworkMonitor.get_default()
 const cpuPollInterval = setting("cpuPollInterval")
 const ramPollInterval = setting("ramPollInterval")
@@ -166,10 +165,6 @@ const [networkExpanded, setNetworkExpanded] = createState(false)
 const toGiB = (bytes: number) => (bytes / GIBIBYTE).toFixed(2)
 const formatTemperature = (value: number | null) => value === null ? "Unavailable" : `${value.toFixed(1)}°C`
 
-function toggleSysWorkspace() {
-    hyprland.dispatch('hl.dsp.workspace.toggle_special("sys")', "")
-}
-
 function toggleNetwork() {
     setNetworkExpanded(expanded => !expanded)
 }
@@ -188,7 +183,7 @@ export default function SystemWidget() {
 
     return (
         <box class="system-widget" spacing={4}>
-            <button class="system-section" tooltipText={cpuTooltip} onClicked={toggleSysWorkspace}>
+            <button class="system-section" tooltipText={cpuTooltip} onClicked={() => toggleSpecialWorkspace("sys")}>
                 <box spacing={4}>
                     <label class="icon" label={systemIcons.cpu}/>
                     <Gtk.Inscription
@@ -200,7 +195,7 @@ export default function SystemWidget() {
                 </box>
             </button>
 
-            <button class="system-section" tooltipText={memoryTooltip} onClicked={toggleSysWorkspace}>
+            <button class="system-section" tooltipText={memoryTooltip} onClicked={() => toggleSpecialWorkspace("sys")}>
                 <box spacing={4}>
                     <label class="icon" label={systemIcons.memory}/>
                     <Gtk.Inscription

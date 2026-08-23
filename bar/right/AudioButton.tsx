@@ -1,5 +1,5 @@
 import Wp from "gi://AstalWp"
-import { Astal, Gtk } from "ags/gtk4"
+import { Gtk } from "ags/gtk4"
 import {
     type Accessor,
     createBinding,
@@ -8,18 +8,16 @@ import {
     createState,
     For,
     With,
-    onCleanup,
 } from "ags"
 import { execAsync } from "ags/process"
 import { audio as icons } from "../../util/icons"
 import { handleClick } from "../../util/util"
+import { VOLUME_MULTIPLIER, VolumeSlider } from "../../widgets/audio"
 
 
 const wp = Wp.get_default()!
 const audio = wp.audio
 const POPOVER_WIDTH = 480
-const MAX_VOLUME_DISPLAY = 1
-const VOLUME_MULTIPLIER = 1.5
 
 // Output devices
 
@@ -95,7 +93,7 @@ const otherStreams = createComputed<Wp.Stream[]>(() =>
 
 function toggleMute() {
     const speaker = audio.defaultSpeaker
-        speaker.set_mute(!speaker.mute)
+    speaker.set_mute(!speaker.mute)
 }
 
 function changeDefaultVolume(delta: number) {
@@ -326,7 +324,6 @@ function DisclosureButton({ label, hasOptions, disclosure }: DisclosureButtonPro
     )
 }
 
-
 function createNodeLabel(node: Wp.Node, fallback: string) {
     const description = createBinding(node, "description")
     const name = createBinding(node, "name")
@@ -359,74 +356,5 @@ function VolumeRow({ node }: { node: Wp.Node }) {
 
             <VolumeSlider node={node}/>
         </box>
-    )
-}
-
-function VolumeSlider({ node }: { node: Wp.Node }) {
-    const level = createBinding(node, "volume")(volume => volume / VOLUME_MULTIPLIER)
-    let slider: Astal.Slider
-    let label: Gtk.Inscription | undefined
-    let timer: ReturnType<typeof setTimeout> | undefined
-
-    onCleanup(() => {
-        if(timer !== undefined)
-            clearTimeout(timer)
-    })
-
-    function positionLabel() {
-        if(!label)
-            return true
-
-        label.text = `${Math.round(slider.value * 100)}`
-        const labelWidth = label.get_width()
-        const trough = slider.get_range_rect()
-
-        if(!labelWidth || !trough.width)
-            return true
-
-        const end = trough.x + slider.value / slider.max * trough.width
-        label.marginStart = Math.min(end + 4, trough.x + trough.width - labelWidth)
-
-        return false
-    }
-
-    function adjustVolume(slider: Astal.Slider, value: number) {
-        slider.add_css_class("adjust-volume")
-
-        if(timer !== undefined)
-            clearTimeout(timer)
-
-        timer = setTimeout(() => {
-            slider.remove_css_class("adjust-volume")
-            timer = undefined
-        }, 150)
-
-        node.set_volume(value * VOLUME_MULTIPLIER)
-
-        return false
-    }
-
-    return (
-        <overlay class="volume-slider-container">
-            <slider
-                $={(self) => { slider = self }}
-                class="volume-slider"
-                hexpand
-                min={0}
-                max={MAX_VOLUME_DISPLAY}
-                step={0.01}
-                value={level}
-                onValueChanged={positionLabel}
-                onChangeValue={(slider, _type, value) => adjustVolume(slider, value)}
-            />
-            <Gtk.Inscription
-                $={(self) => { label = self }}
-                $type="overlay"
-                class="volume-label"
-                canTarget={false}
-                halign={Gtk.Align.START}
-                onMap={self => self.add_tick_callback(positionLabel)}
-            />
-        </overlay>
     )
 }
