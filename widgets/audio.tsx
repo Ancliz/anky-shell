@@ -3,8 +3,8 @@ import { Astal, Gtk } from "ags/gtk4"
 import Wp from "gi://AstalWp"
 import Mpris from "gi://AstalMpris"
 
-const VOLUME_MULTIPLIER = 1.5
-const MAX_VOLUME_DISPLAY = 1
+export const VOLUME_MULTIPLIER = 1.5
+export const MAX_VOLUME_DISPLAY = 1
 
 export function VolumeSlider({ node }: { node: Wp.Node | Mpris.Player }) {
     const level = createBinding(node, "volume")(volume => volume / VOLUME_MULTIPLIER)

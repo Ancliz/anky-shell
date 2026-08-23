@@ -12,6 +12,7 @@ import {
 import { execAsync } from "ags/process"
 import { audio as icons } from "../../util/icons"
 import { handleClick } from "../../util/util"
+import { MediaPlayerVolumeSection } from "../../osd/MediaPlayer"
 import { VOLUME_MULTIPLIER, VolumeSlider } from "../../widgets/audio"
 
 
@@ -209,20 +210,12 @@ function DeviceSection({ title, selected, others, emptyLabel, disclosure }: Devi
     return (
         <box class="audio-section" orientation={Gtk.Orientation.VERTICAL}>
 
-            <label class="audio-section-title" label={title}/>
+            <SectionDisclosureButton label={title} hasOptions={hasOthers} disclosure={disclosure}/>
 
             <With value={selected}>
                 { endpoint => endpoint
-                    ? <SelectedVolumeRow
-                        node={endpoint}
-                        hasOptions={hasOthers}
-                        disclosure={disclosure}
-                    />
-                    : <DisclosureButton
-                        label={emptyLabel}
-                        hasOptions={hasOthers}
-                        disclosure={disclosure}
-                    />
+                    ? <SelectedVolumeRow node={endpoint}/>
+                    : <AudioLabelRow label={emptyLabel}/>
                 }
             </With>
 
@@ -274,14 +267,10 @@ function VolumeSection<T extends Wp.Node>({ visible, title, pinned, others, disc
     return (
         <box class="audio-section" visible={visible} orientation={Gtk.Orientation.VERTICAL}>
 
-            <label class="audio-section-title" label={title}/>
-            <box>            
-                <With value={pinned}>
-                    { node => node
-                        ? <SelectedVolumeRow node={node} hasOptions={hasOthers} disclosure={disclosure}/>
-                        : <DisclosureButton hasOptions={hasOthers} disclosure={disclosure}/>
-                    }
-                </With>
+            <box orientation={Gtk.Orientation.VERTICAL}>
+                <label class="audio-section-title" label="Media"/>
+                <MediaPlayerVolumeSection/>
+                <SectionDisclosureButton label={title} hasOptions={hasOthers} disclosure={disclosure}/>
             </box>
 
             <Gtk.Revealer revealChild={disclosure.expanded} transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}>
@@ -296,31 +285,32 @@ function VolumeSection<T extends Wp.Node>({ visible, title, pinned, others, disc
 }
 
 
-type DisclosureButtonProps = {
-    label?: string | Accessor<string>
+type SectionDisclosureButtonProps = {
+    label: string
     hasOptions: Accessor<boolean>
     disclosure: Disclosure
 }
 
-function DisclosureButton({ label, hasOptions, disclosure }: DisclosureButtonProps) {
+function SectionDisclosureButton({ label, hasOptions, disclosure }: SectionDisclosureButtonProps) {
     return (
-        <button
-            class="audio-disclosure-row"
-            hexpand
-            sensitive={hasOptions}
-            onClicked={disclosure.toggle}
-        >
-            <box hexpand spacing={8}>
-                <Gtk.Inscription
-                    hexpand
-                    minChars={0}
-                    textOverflow={Gtk.InscriptionOverflow.ELLIPSIZE_END}
-                    tooltipText={label ?? ""}
-                    text={label ?? ""}
-                />
-                <image visible={hasOptions} iconName={disclosure.iconName}/>
-            </box>
+        <button class="audio-section-title-button" hexpand sensitive={hasOptions}
+            onClicked={disclosure.toggle}>
+            <overlay hexpand>
+                <label class="audio-section-title" label={label}/>
+                <image $type="overlay" visible={hasOptions} halign={Gtk.Align.END}
+                    valign={Gtk.Align.CENTER} iconName={disclosure.iconName}/>
+            </overlay>
         </button>
+    )
+}
+
+function AudioLabelRow({ label }: { label: string | Accessor<string> }) {
+    return (
+        <box class="audio-disclosure-row" hexpand>
+            <Gtk.Inscription hexpand minChars={0}
+                textOverflow={Gtk.InscriptionOverflow.ELLIPSIZE_END}
+                tooltipText={label} text={label}/>
+        </box>
     )
 }
 
@@ -330,13 +320,13 @@ function createNodeLabel(node: Wp.Node, fallback: string) {
     return createComputed(() => `${description() ?? name() ?? fallback}`)
 }
 
-function SelectedVolumeRow(props : { node: Wp.Node, hasOptions: Accessor<boolean>, disclosure: Disclosure }) {
-    const label = createNodeLabel(props.node, "Node")
+function SelectedVolumeRow({ node }: { node: Wp.Node }) {
+    const label = createNodeLabel(node, "Node")
 
     return (
         <box class="audio-selected-row" hexpand orientation={Gtk.Orientation.VERTICAL} spacing={2}>
-            <DisclosureButton label={label} hasOptions={props.hasOptions} disclosure={props.disclosure}/>
-            <VolumeSlider node={props.node}/>
+            <AudioLabelRow label={label}/>
+            <VolumeSlider node={node}/>
         </box>
     )
 }

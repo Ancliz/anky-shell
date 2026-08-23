@@ -83,7 +83,8 @@ export const audio = {
         "music": "󰝚",
         "music-off": "󰝛",
         "speaker": "󰓃",
-        "speaker-off": "󰓄"
+        "speaker-off": "󰓄",
+        "playlist": "󰐑"
     }
 
 export const web = {

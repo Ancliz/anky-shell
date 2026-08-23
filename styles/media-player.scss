@@ -1,0 +1,46 @@
+@use "../global/css/" as *;
+
+.media-player-audio-menu .song-artist {
+    color: gtkify(text);
+    font-size: 1em;
+    font-weight: 800;
+}
+
+.media-player-audio-menu .song-title {
+    color: gtkify(text);
+    font-size: 1em;
+    font-weight: 400;
+}
+
+.media-player-progress slider {
+    opacity: 0;
+}
+
+.media-player-progress highlight {
+    background-color: gtkify(lavender);
+}
+
+.media-controls button {
+    padding: 10px 20px;
+    font-size: 28px;
+    transition: text-shadow 2000ms ease;
+}
+
+.media-controls button:active {
+    font-size: 24px;
+}
+
+.song-details {
+    font-size: 20px;
+    font-family: 'Ubuntu';
+    margin-left: 10px;
+}
+
+.song-artist {
+    font-size: 0.8em;
+
+}
+
+.song-title {
+    font-weight: 700;
+}

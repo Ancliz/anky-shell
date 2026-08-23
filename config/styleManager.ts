@@ -10,11 +10,11 @@ import { settings } from "./settings"
 
 
 const STYLE_DIR = `${SRC}/styles`
-const SOURCE_STYLE = `${STYLE_DIR}/bar.scss`
+const SOURCE_STYLE = `${STYLE_DIR}/styles.scss`
 const GLOBAL_STYLE_DIR = `${SRC}/global/css`
 const CACHE_DIR = GLib.build_filenamev([GLib.get_user_cache_dir(), "ags", "bar"])
-const COMPILED_STYLE = `${CACHE_DIR}/bar.css`
-const TEMP_STYLE = `${CACHE_DIR}/bar.tmp.css`
+const COMPILED_STYLE = `${CACHE_DIR}/styles.css`
+const TEMP_STYLE = `${CACHE_DIR}/styles.tmp.css`
 const LOCAL_SASS = `${SRC}/node_modules/.bin/sass`
 const SASS = GLib.file_test(LOCAL_SASS, GLib.FileTest.EXISTS) ? LOCAL_SASS : "sass"
 const RELOAD_DELAY = 100

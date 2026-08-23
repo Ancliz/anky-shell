@@ -22,3 +22,7 @@ export function groupBy<T, K extends PropertyKey>(array: T[], callback: (item: T
     }
     return map
 }
+
+export function clamp(val: number, min: number, max: number): number {
+    return Math.min(Math.max(val, min), max);
+}

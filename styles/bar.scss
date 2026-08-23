@@ -242,19 +242,35 @@ tooltip label {
     margin: 3px 0px;
 }
 
-.audio-disclosure-row {
+.audio-section-title-button {
+    min-height: 0;
+    padding: 0px 8px;
+}
+
+.audio-section-title-button:hover,
+.audio-section-title-button:active {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.audio-section-title-button:disabled {
+    opacity: 1;
+}
+
+.audio-disclosure-row,
+.media-player-track-row {
     min-height: 30px;
     background-color: gtkify(surface0, 0.34);
     border-radius: 9px;
     padding: 0px 8px;
 }
 
-.audio-disclosure-row image {
+.audio-section-title-button image {
     opacity: 0.7;
     transition: opacity 140ms ease;
 }
 
-.audio-disclosure-row:hover image {
+.audio-section-title-button:hover image {
     opacity: 1;
 }
 
