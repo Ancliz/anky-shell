@@ -91,7 +91,6 @@ const otherStreams = createComputed<Wp.Stream[]>(() =>
     streams().filter(stream => !isSpotify(stream))
 )
 
-
 function toggleMute() {
     const speaker = audio.defaultSpeaker
     speaker.set_mute(!speaker.mute)
@@ -124,7 +123,6 @@ function createDisclosure(): Disclosure {
         collapse: () => setExpanded(false),
     }
 }
-
 
 export default function AudioButton({ class: className = "" }) {
     const outputs = createDisclosure()
@@ -317,7 +315,10 @@ function AudioLabelRow({ label }: { label: string | Accessor<string> }) {
 function createNodeLabel(node: Wp.Node, fallback: string) {
     const description = createBinding(node, "description")
     const name = createBinding(node, "name")
-    return createComputed(() => `${description() ?? name() ?? fallback}`)
+    const binary = node.get_pw_property("application.process.binary")
+    return createComputed(() => binary === "vesktop"
+        ? "Discord"
+        : `${description() ?? name() ?? fallback}`)
 }
 
 function SelectedVolumeRow({ node }: { node: Wp.Node }) {
