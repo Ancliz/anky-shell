@@ -14,6 +14,7 @@ import { audio as icons } from "../../util/icons"
 import { handleClick } from "../../util/util"
 import { MediaPlayerVolumeSection } from "../../osd/MediaPlayer"
 import { VOLUME_MULTIPLIER, VolumeSlider } from "../../widgets/audio"
+import { CENTER, END, VERTICAL } from "../../util/gtkutil"
 
 
 const wp = Wp.get_default()!
@@ -158,7 +159,7 @@ export default function AudioButton({ class: className = "" }) {
             <label class="icon" label={icon} tooltipText={outputLevel(v => `${v}%`)}/>
 
             <popover class="audio-popover" onClosed={collapseAll}>
-                <box widthRequest={POPOVER_WIDTH} orientation={Gtk.Orientation.VERTICAL}>
+                <box widthRequest={POPOVER_WIDTH} orientation={VERTICAL}>
                     <DeviceSection
                         title="Output device"
                         selected={defaultSpeaker}
@@ -206,7 +207,7 @@ function DeviceSection({ title, selected, others, emptyLabel, disclosure }: Devi
     }
 
     return (
-        <box class="audio-section" orientation={Gtk.Orientation.VERTICAL}>
+        <box class="audio-section" orientation={VERTICAL}>
 
             <SectionDisclosureButton label={title} hasOptions={hasOthers} disclosure={disclosure}/>
 
@@ -218,7 +219,7 @@ function DeviceSection({ title, selected, others, emptyLabel, disclosure }: Devi
             </With>
 
             <Gtk.Revealer revealChild={disclosure.expanded} transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}>
-                <box class="audio-dropdown" orientation={Gtk.Orientation.VERTICAL}>
+                <box class="audio-dropdown" orientation={VERTICAL}>
                     <For each={others}>
                         {endpoint => <DeviceChoice endpoint={endpoint} onSelect={selectDevice}/>}
                     </For>
@@ -263,16 +264,16 @@ function VolumeSection<T extends Wp.Node>({ visible, title, pinned, others, disc
     const hasOthers = others(items => items.length > 0)
 
     return (
-        <box class="audio-section" visible={visible} orientation={Gtk.Orientation.VERTICAL}>
+        <box class="audio-section" visible={visible} orientation={VERTICAL}>
 
-            <box orientation={Gtk.Orientation.VERTICAL}>
+            <box orientation={VERTICAL}>
                 <label class="audio-section-title" label="Media"/>
                 <MediaPlayerVolumeSection/>
                 <SectionDisclosureButton label={title} hasOptions={hasOthers} disclosure={disclosure}/>
             </box>
 
             <Gtk.Revealer revealChild={disclosure.expanded} transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}>
-                <box class="audio-dropdown" orientation={Gtk.Orientation.VERTICAL}>
+                <box class="audio-dropdown" orientation={VERTICAL}>
                     <For each={others}>
                         {node => <VolumeRow node={node}/>}
                     </For>
@@ -295,8 +296,8 @@ function SectionDisclosureButton({ label, hasOptions, disclosure }: SectionDiscl
             onClicked={disclosure.toggle}>
             <overlay hexpand>
                 <label class="audio-section-title" label={label}/>
-                <image $type="overlay" visible={hasOptions} halign={Gtk.Align.END}
-                    valign={Gtk.Align.CENTER} iconName={disclosure.iconName}/>
+                <image $type="overlay" visible={hasOptions} halign={END}
+                    valign={CENTER} iconName={disclosure.iconName}/>
             </overlay>
         </button>
     )
@@ -325,7 +326,7 @@ function SelectedVolumeRow({ node }: { node: Wp.Node }) {
     const label = createNodeLabel(node, "Node")
 
     return (
-        <box class="audio-selected-row" hexpand orientation={Gtk.Orientation.VERTICAL} spacing={2}>
+        <box class="audio-selected-row" hexpand orientation={VERTICAL} spacing={2}>
             <AudioLabelRow label={label}/>
             <VolumeSlider node={node}/>
         </box>

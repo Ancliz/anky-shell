@@ -2,6 +2,7 @@ import { createBinding, onCleanup } from "ags"
 import { Astal, Gtk } from "ags/gtk4"
 import Wp from "gi://AstalWp"
 import Mpris from "gi://AstalMpris"
+import { START } from "../util/gtkutil"
 
 export const VOLUME_MULTIPLIER = 1.5
 export const MAX_VOLUME_DISPLAY = 1
@@ -68,7 +69,7 @@ export function VolumeSlider({ node }: { node: Wp.Node | Mpris.Player }) {
                 $type="overlay"
                 class="volume-label"
                 canTarget={false}
-                halign={Gtk.Align.START}
+                halign={START}
                 onMap={self => self.add_tick_callback(positionLabel)}
             />
         </overlay>

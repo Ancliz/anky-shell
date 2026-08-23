@@ -56,7 +56,7 @@ function closeSettings() {
 function SettingRow({ title, description, control }: SettingRowProps) {
     return (
         <box class="settings-row" spacing={16}>
-            <box hexpand orientation={Gtk.Orientation.VERTICAL}>
+            <box hexpand orientation={VERTICAL}>
                 <label class="settings-row-label" xalign={0} label={title}/>
                 <label class="settings-description" xalign={0} wrap label={description}/>
             </box>
@@ -150,9 +150,9 @@ export default function SettingsOSD() {
             }}/>
 
             <box class="settings-panel" widthRequest={820}
-                orientation={Gtk.Orientation.VERTICAL} spacing={18}>
+                orientation={VERTICAL} spacing={18}>
                 <box class="settings-header" spacing={12}>
-                    <box hexpand orientation={Gtk.Orientation.VERTICAL}>
+                    <box hexpand orientation={VERTICAL}>
                         <label class="settings-title" xalign={0} label="Bar settings"/>
                         <label class="settings-description" xalign={0}
                             label="Live preview, changes are saved on apply."/>
@@ -163,13 +163,13 @@ export default function SettingsOSD() {
                     </button>
                 </box>
 
-                <box class="settings-preview" orientation={Gtk.Orientation.VERTICAL}>
+                <box class="settings-preview" orientation={VERTICAL}>
                     <label class="settings-preview-date" xalign={0} label={previewDate}/>
                     <label class="settings-preview-clock" xalign={0} label={previewTime}/>
                 </box>
 
                 <box class="settings-grid" spacing={24}>
-                    <box class="settings-column" hexpand orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+                    <box class="settings-column" hexpand orientation={VERTICAL} spacing={10}>
 
                         <label class="settings-section-title" xalign={0} label="Appearance"/>
 
@@ -198,7 +198,7 @@ export default function SettingsOSD() {
                             control={<FormatControl name="timeFormat"/>}/>
                     </box>
 
-                    <box class="settings-column" hexpand orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+                    <box class="settings-column" hexpand orientation={VERTICAL} spacing={10}>
 
                         <label class="settings-section-title" xalign={0} label="Monitoring"/>
 
@@ -224,7 +224,7 @@ export default function SettingsOSD() {
                     </box>
                 </box>
 
-                <box class="settings-actions" halign={Gtk.Align.END} spacing={8}>
+                <box class="settings-actions" halign={END} spacing={8}>
                     <button class="settings-reset" onClicked={resetSettings}>
                         <label label="Reset defaults"/>
                     </button>

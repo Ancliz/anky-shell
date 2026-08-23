@@ -7,6 +7,7 @@ import GdkPixbuf from "gi://GdkPixbuf"
 import { VolumeSlider } from "../widgets/audio"
 import { clamp } from "../util/util"
 import { getClientByClass, toggleClient } from "../util/hyprutil"
+import { CENTER, HORIZONTAL, START, VERTICAL } from "../util/gtkutil"
 
 const WINDOW_NAME = "media-player-overlay"
 const spotify = Mpris.Player.new("org.mpris.MediaPlayer2.spotify")
@@ -25,22 +26,22 @@ function MediaPlayer({ artSize }: { artSize?: number }) {
     return (
         <With value={available}>
                 {ready => ready && (
-                    <box orientation={Gtk.Orientation.VERTICAL}>
-                        <box orientation={Gtk.Orientation.HORIZONTAL}>
+                    <box orientation={VERTICAL}>
+                        <box orientation={HORIZONTAL}>
 
                             <button onClicked={() => toggleClient(playerClient)}>
                                 <CoverArt size={artSize ?? 128}/>
                             </button>
 
-                            <box orientation={Gtk.Orientation.VERTICAL}>
-                                <box class="song-details" orientation={Gtk.Orientation.VERTICAL}>
-                                    <label class="song-title" halign={Gtk.Align.START} label={title}/>
-                                    <label class="song-artist" halign={Gtk.Align.START} label={artist}/>
+                            <box orientation={VERTICAL}>
+                                <box class="song-details" orientation={VERTICAL}>
+                                    <label class="song-title" halign={START} label={title}/>
+                                    <label class="song-artist" halign={START} label={artist}/>
                                 </box>
 
                                 <ProgressBar/>
 
-                                <box class="media-controls" halign={Gtk.Align.CENTER} >
+                                <box class="media-controls" halign={CENTER} >
                                     <button onClicked={() => spotify.previous()}>
                                         <label label={icons["skip-previous-outline"]}/>
                                     </button>
@@ -64,8 +65,8 @@ export function MediaPlayerVolumeSection() {
         <box class="media-player-audio-menu">
             <With value={available}>
                 {ready => ready && (
-                    <box orientation={Gtk.Orientation.VERTICAL}>
-                        <box orientation={Gtk.Orientation.HORIZONTAL}>
+                    <box orientation={VERTICAL}>
+                        <box orientation={HORIZONTAL}>
                             <box class="media-player-track-row" hexpand spacing={4}>
                                 <label class="song-artist" label={artist}/>
                                 <label label="-"/>

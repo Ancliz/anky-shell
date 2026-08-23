@@ -3,6 +3,7 @@ import { createMemo, createState, onCleanup } from "ags"
 
 import { setting } from "../config/settings"
 import { formatDate, hasSeconds, formatTime } from "../util/dateFormat"
+import { CENTER, VERTICAL } from "../util/gtkutil"
 
 const dateFormat = setting("dateFormat")
 const timeFormat = setting("timeFormat")
@@ -92,14 +93,14 @@ export default function DateTimeWidget() {
     const longTime = createMemo(() => calendarOpen() ? formatters.longTime.format(now()) : "")
 
     return (
-        <menubutton class="date-button" $type="end" halign={Gtk.Align.CENTER}>
-            <box class="date-content" orientation={Gtk.Orientation.VERTICAL}>
+        <menubutton class="date-button" $type="end" halign={CENTER}>
+            <box class="date-content" orientation={VERTICAL}>
                 <label class="date-label" label={date}/>
                 <label class="time-label" label={shortTime}/>
             </box>
             <popover
                 onNotifyVisible={(self) => setCalendarOpen(self.visible)}>
-                <box orientation={Gtk.Orientation.VERTICAL} spacing={3}>
+                <box orientation={VERTICAL} spacing={3}>
                     <label label={longDate}/>
                     <label label={longTime}/>
                     <Gtk.Calendar/>
