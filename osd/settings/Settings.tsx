@@ -6,6 +6,7 @@ import { CLIENT_ANIMATIONS, type ClientAnimationName } from "../../config/bar/an
 import { resetSettings, setting, settings, setSetting } from "../../config/settings"
 import { getTheme, THEMES, type ThemeName } from "../../config/themes"
 import { formatDateTime } from "../../util/dateFormat"
+import { END, VERTICAL } from "../../util/gtkutil"
 
 
 const WINDOW_NAME = "settings-osd"
