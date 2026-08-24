@@ -471,19 +471,6 @@ dropdown.settings-control popover > contents {
     color: gtkify(subtext1);
 }
 
-.settings-done {
-    background-color: accent();
-    border-color: accent();
-    color: var(--accent-text);
-    font-weight: 700;
-    padding: 0px 16px;
-}
-
-.settings-done:hover {
-    background-color: accent(0.88);
-    box-shadow: 0px 4px 12px accent(0.18);
-}
-
 .settings-button .icon {
     transition: color 140ms ease, opacity 140ms ease, transform 180ms ease;
 }

@@ -156,7 +156,7 @@ export default function SettingsOSD() {
                     <box hexpand orientation={VERTICAL}>
                         <label class="settings-title" xalign={0} label="Bar settings"/>
                         <label class="settings-description" xalign={0}
-                            label="Live preview, changes are saved on apply."/>
+                            label="Changes are previewed and saved automatically."/>
                     </box>
                     <button class="settings-close settings-close-icon" tooltipText="Close"
                         onClicked={closeSettings}>
@@ -228,9 +228,6 @@ export default function SettingsOSD() {
                 <box class="settings-actions" halign={END} spacing={8}>
                     <button class="settings-reset" onClicked={resetSettings}>
                         <label label="Reset defaults"/>
-                    </button>
-                    <button class="settings-done" onClicked={closeSettings}>
-                        <label label="Apply"/>
                     </button>
                 </box>
             </box>
