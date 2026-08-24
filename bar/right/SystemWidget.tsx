@@ -5,7 +5,7 @@ import { readFile } from "ags/file"
 import { Gtk } from "ags/gtk4"
 
 import { setting } from "../../config/settings"
-import { createDynamicPoll } from "../../util/dynamicPoll"
+import { createDynamicPoll } from "../../util/agsutil"
 import {
     network as networkIcons,
     system as systemIcons
