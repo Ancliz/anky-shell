@@ -1,6 +1,8 @@
 import { onCleanup } from "ags"
 import { monitorFile } from "ags/file"
 import { exec } from "ags/process"
+import app from "ags/gtk4/app"
+import { Astal } from "ags/gtk4"
 import Gdk from "gi://Gdk?version=4.0"
 import GLib from "gi://GLib?version=2.0"
 import Gtk from "gi://Gtk?version=4.0"
@@ -95,7 +97,9 @@ export function initStyles() {
     const runtimeProvider = new Gtk.CssProvider()
     const providers = [styleProvider, runtimeProvider]
     let runtimeStyle = runtimeCss()
+    let runtimeFontSize = settings.peek().barFontSize
     let reload = 0
+    let sizeReset = 0
     let disposed = false
 
     if(compileStyle() || GLib.file_test(COMPILED_STYLE, GLib.FileTest.IS_REGULAR))
@@ -125,11 +129,31 @@ export function initStyles() {
 
     const globalMonitor = monitorFile(GLOBAL_STYLE_DIR, queueReload)
 
+    const queueBarHeightReset = () => {
+        if(sizeReset)
+            GLib.Source.remove(sizeReset)
+
+        sizeReset = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            sizeReset = 0
+            app.windows.filter(window => window.has_css_class("Bar")).forEach(window => {
+                const bar = window as Astal.Window
+                const width = bar.get_current_monitor().get_geometry().width
+                bar.set_default_size(width, -1)
+            })
+            return GLib.SOURCE_REMOVE
+        })
+    }
+
     const unsubscribe = settings.subscribe(() => {
+        const nextFontSize = settings.peek().barFontSize
+        const fontSizeChanged = nextFontSize !== runtimeFontSize
         const nextRuntimeStyle = runtimeCss()
         if(nextRuntimeStyle !== runtimeStyle) {
             runtimeStyle = nextRuntimeStyle
+            runtimeFontSize = nextFontSize
             runtimeProvider.load_from_string(runtimeStyle)
+            if(fontSizeChanged)
+                queueBarHeightReset()
         }
     })
 
@@ -143,6 +167,8 @@ export function initStyles() {
         globalMonitor.cancel()
         if(reload)
             GLib.Source.remove(reload)
+        if(sizeReset)
+            GLib.Source.remove(sizeReset)
         providers.forEach(provider => Gtk.StyleContext.remove_provider_for_display(display, provider))
         if(activeDispose === dispose)
             activeDispose = undefined
