@@ -1,0 +1,11 @@
+@use "sass:string";
+@use "./mocha.css";
+@use "./custom-colours.css";
+
+@function gtkify($colour, $opacity: null) {
+    @if $opacity == null {
+        @return string.unquote("@#{$colour}");
+    }
+
+    @return string.unquote("alpha(@#{$colour}, #{$opacity})");
+}
