@@ -6,13 +6,13 @@ import NotificationButton from "./NotificationButton"
 import PowerButton from "./PowerUButton"
 import SettingsButton from "./SettingsButton"
 import SystemWidget from "./SystemWidget"
-import Tray from "./TrayButton"
+import TrayButton from "./TrayButton"
 
 export default function RightSection({ gdkmonitor: gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
     return (
         <box class="right-section" spacing={3}>
             <Keymap/>
-            <Tray/>
+            <TrayButton/>
             <NotificationButton/>
             <AudioButton/>
             <SystemWidget/>

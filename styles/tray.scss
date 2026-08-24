@@ -1,0 +1,16 @@
+@use "../global/css/" as *;
+
+.tray {
+    background-color: gtkify(mantle);
+    padding: 10px;
+}
+
+.tray button {
+    padding: 0px;
+    margin: 2px;
+}
+
+.tray button:hover {
+    padding: 0px;
+    margin: 2px;
+}

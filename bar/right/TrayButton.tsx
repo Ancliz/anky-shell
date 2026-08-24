@@ -1,9 +1,14 @@
+import { Gdk } from "ags/gtk4"
+import Tray from "../../tray/Tray"
 import { system } from "../../util/icons"
 
-export default function Tray() {
+export default function TrayButton() {
     return (
-        <button name="tray">
+        <menubutton name="tray">
             <label class="icon" label={system["menu-down-outline"]}/>
-        </button>
+            <popover>
+                <Tray/>
+            </popover>
+        </menubutton>
     )
 }
