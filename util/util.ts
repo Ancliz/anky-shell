@@ -26,3 +26,54 @@ export function groupBy<T, K extends PropertyKey>(array: T[], callback: (item: T
 export function clamp(val: number, min: number, max: number): number {
     return Math.min(Math.max(val, min), max);
 }
+
+export type Timeout = ReturnType<typeof setTimeout>
+export type TimeoutSlot = PropertyKey
+
+export function createTimeoutScope() {
+    const timers = new Set<Timeout>()
+    const slots = new Map<TimeoutSlot, Timeout>()
+
+    function forget(timer: Timeout) {
+        timers.delete(timer)
+
+        for(const [slot, current] of slots) {
+            if(current === timer)
+                slots.delete(slot)
+        }
+    }
+
+    function schedule(callback: () => void, delay = 0) {
+        const timer = setTimeout(() => {
+            forget(timer)
+            callback()
+        }, delay)
+
+        timers.add(timer)
+        return timer
+    }
+
+    function cancel(timer?: Timeout) {
+        if(timer === undefined)
+            return
+
+        clearTimeout(timer)
+        forget(timer)
+    }
+
+    function replace(slot: TimeoutSlot, callback: () => void, delay = 0) {
+        cancel(slots.get(slot))
+
+        const timer = schedule(callback, delay)
+        slots.set(slot, timer)
+        return timer
+    }
+
+    function cancelAll() {
+        timers.forEach(clearTimeout)
+        timers.clear()
+        slots.clear()
+    }
+
+    return { schedule, replace, cancel, cancelAll }
+}

@@ -16,6 +16,7 @@ import {
 } from "../config/bar/animations"
 import { setting } from "../config/settings"
 import { focus } from "../util/hyprutil"
+import { createTimeoutScope } from "../util/timerutil"
 
 type Phase = "revealing" | "opening" | "idle" | "closing" | "moving-reveal" | "moving-in" | "moving-out"
 type ClientItem = ReturnType<typeof createClientItem>
@@ -96,17 +97,7 @@ export default function LeftSection() {
     const initialItems = hyprland.clients.map(client => createClientItem(client, true))
     const [clientItems, setClientItems] = createState<ClientItem[]>(initialItems)
     const itemsByAddress = new Map(initialItems.map(item => [item.client.address, item]))
-    const timers = new Set<ReturnType<typeof setTimeout>>()
-
-    function later(callback: () => void, delay: number) {
-        const timer = setTimeout(() => {
-            timers.delete(timer)
-            callback()
-        }, delay)
-
-        timers.add(timer)
-    }
-
+    const timers = createTimeoutScope()
     function beginTransition(item: ClientItem, phase: Phase, transition: ClientAnimationTiming) {
         const generation = ++item.generation
         item.setRevealDuration(transition.revealTime)
@@ -115,7 +106,7 @@ export default function LeftSection() {
     }
 
     function laterIfCurrent(item: ClientItem, generation: number, delay: number, callback: () => void) {
-        later(() => {
+        timers.schedule(() => {
             if(item.generation === generation)
                 callback()
         }, delay)
@@ -215,10 +206,7 @@ export default function LeftSection() {
     })
     const className = clientAnimation(name => `apps-bar ${getClientAnimation(name).className}`)
 
-    onCleanup(() => {
-        for(const timer of timers)
-            clearTimeout(timer)
-    })
+    onCleanup(timers.cancelAll)
 
     return (
         <box class={className} spacing={0}>

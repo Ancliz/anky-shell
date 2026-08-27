@@ -3,6 +3,7 @@ import { Astal, Gtk } from "ags/gtk4"
 import Wp from "gi://AstalWp"
 import Mpris from "gi://AstalMpris"
 import { START } from "../util/gtkutil"
+import { createTimeoutScope } from "../util/util"
 
 export const VOLUME_MULTIPLIER = 1.5
 export const MAX_VOLUME_DISPLAY = 1
@@ -11,12 +12,9 @@ export function VolumeSlider({ node }: { node: Wp.Node | Mpris.Player }) {
     const level = createBinding(node, "volume")(volume => volume / VOLUME_MULTIPLIER)
     let slider: Astal.Slider
     let label: Gtk.Inscription | undefined
-    let timer: ReturnType<typeof setTimeout> | undefined
+    let timer = createTimeoutScope()
 
-    onCleanup(() => {
-        if(timer !== undefined)
-            clearTimeout(timer)
-    })
+    onCleanup(timer.cancelAll)
 
     function positionLabel() {
         if(!label)
@@ -37,17 +35,9 @@ export function VolumeSlider({ node }: { node: Wp.Node | Mpris.Player }) {
 
     function adjustVolume(slider: Astal.Slider, value: number) {
         slider.add_css_class("adjust-volume")
-
-        if(timer !== undefined)
-            clearTimeout(timer)
-
-        timer = setTimeout(() => {
-            slider.remove_css_class("adjust-volume")
-            timer = undefined
-        }, 150)
-
+        timer.cancelAll()
+        timer.schedule(() => { slider.remove_css_class("adjust-volume") }, 150)
         node.set_volume(value * VOLUME_MULTIPLIER)
-
         return false
     }
 
