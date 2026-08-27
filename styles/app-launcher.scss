@@ -1,0 +1,19 @@
+@use "../global/css" as *;
+.applauncher {
+    background: rgba(255,255,255,0.009);
+    border-radius: 10px;
+}
+
+.entry {
+    background: transparent;
+    border: 5px solid gtkify(lavender, 0.1);
+    border-radius: 30px;
+    margin-bottom: 10px;
+    outline: none;
+    color: gtkify(text)
+}
+
+.launcher-app-box {
+    margin: 50px;
+    padding: 0px;
+}
