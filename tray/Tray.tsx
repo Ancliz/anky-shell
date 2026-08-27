@@ -1,6 +1,5 @@
 import { createBinding, For } from "ags"
-import { Astal, Gdk, Gtk } from "ags/gtk4"
-import app from "ags/gtk4/app"
+import { Gdk, Gtk } from "ags/gtk4"
 import AstalTray from "gi://AstalTray"
 import { handleClick } from "../util/util"
 
@@ -43,10 +42,10 @@ function Item({ item }: { item: AstalTray.TrayItem }) {
 
 export default function Tray() {
     return (
-        <box>
+        <Gtk.FlowBox maxChildrenPerLine={5} selectionMode={Gtk.SelectionMode.NONE}>
             <For each={items}>
                 {item => <Item item={item}/>}
             </For>
-        </box>
+        </Gtk.FlowBox>
     )
 }
