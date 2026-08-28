@@ -27,6 +27,11 @@ const rows = results((apps) => {
     return result
 })
 
+function launch(app: Apps.Application) {
+    app.launch()
+    applauncher?.hide()
+}
+
 export default function AppLauncher() {
     return ( 
         <window name={WINDOW_NAME} $={self => { applauncher = self }}
@@ -44,13 +49,19 @@ export default function AppLauncher() {
             onNotifyVisible={self => {
                 if(self.visible)
                     entryElement?.set_text("")
-            }}>
+            }}
+            onShow={() => entryElement.grab_focus()}>
 
-            <Gtk.EventControllerKey onKeyPressed={(_controller, keyval) => {
-                if(keyval !== Gdk.KEY_Escape)
+            <Gtk.EventControllerKey propagationPhase={Gtk.PropagationPhase.CAPTURE}
+                onKeyPressed={(_controller, keyval) => {
+                    if(keyval === Gdk.KEY_Escape) {
+                        applauncher?.hide()
+                        return true
+                    } else if(keyval === Gdk.KEY_Return) {
+                        launch(rows()?.[0]?.[0])
+                        return true
+                    }
                     return false
-                applauncher?.hide()
-                return true
             }}/>
 
             <box widthRequest={width} heightRequest={height} orientation={VERTICAL}>
@@ -73,10 +84,7 @@ export default function AppLauncher() {
                                                     <button
                                                         widthRequest={iconSize}
                                                         heightRequest={iconSize}
-                                                        onClicked={() => {
-                                                            app.launch();
-                                                            applauncher?.hide()
-                                                        }}>
+                                                        onClicked={() => launch(app)}>
                                                         <image iconName={app.get_icon_name()}
                                                             pixelSize={iconSize}
                                                             tooltipText={app.get_name()}
