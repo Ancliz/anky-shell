@@ -11,6 +11,7 @@ import {
     system as systemIcons
 } from "../../util/icons"
 import { toggleSpecialWorkspace } from "../../util/hyprutil"
+import { clamp } from "../../util/util"
 
 
 const networkMonitor = Gio.NetworkMonitor.get_default()
@@ -84,7 +85,7 @@ function readCpuUsage(): number {
     const total = current.total - previousCpu.total
 
     previousCpu = current
-    return Math.max(0, Math.min(100, 100 * (1 - idle / total)))
+    return clamp(100 * (1 - idle / total), 0, 100)
 }
 
 function readCpuTemperature(): number | null {
