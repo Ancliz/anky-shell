@@ -12,6 +12,7 @@ import {
 } from "../../util/icons"
 import { toggleSpecialWorkspace } from "../../util/hyprutil"
 import { clamp } from "../../util/util"
+import { SystemMetricButton } from "../../widgets/general"
 
 
 const networkMonitor = Gio.NetworkMonitor.get_default()
@@ -184,29 +185,22 @@ export default function SystemWidget() {
 
     return (
         <box class="system-widget" spacing={4}>
-            <button class="system-section" tooltipText={cpuTooltip} onClicked={() => toggleSpecialWorkspace("sys")}>
-                <box spacing={4}>
-                    <label class="icon" label={systemIcons.cpu}/>
-                    <Gtk.Inscription
-                        minChars={cpuValueChars}
-                        natChars={cpuValueChars}
-                        xalign={1}
-                        text={cpu}
-                    />
-                </box>
-            </button>
 
-            <button class="system-section" tooltipText={memoryTooltip} onClicked={() => toggleSpecialWorkspace("sys")}>
-                <box spacing={4}>
-                    <label class="icon" label={systemIcons.memory}/>
-                    <Gtk.Inscription
-                        minChars={memoryValueChars}
-                        natChars={memoryValueChars}
-                        xalign={1}
-                        text={memory}
-                    />
-                </box>
-            </button>
+            <SystemMetricButton
+                icon={systemIcons.cpu}
+                value={cpu}
+                valueChars={cpuValueChars}
+                tooltip={cpuTooltip}
+                onClicked={() => toggleSpecialWorkspace("sys")}
+            />
+
+            <SystemMetricButton
+                icon={systemIcons.memory}
+                value={memory}
+                valueChars={memoryValueChars}
+                tooltip={memoryTooltip}
+                onClicked={() => toggleSpecialWorkspace("sys")}
+            />
 
             <button class="system-section" tooltipText={networkAddress} onClicked={toggleNetwork}>
                 <box spacing={4}>
