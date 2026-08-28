@@ -172,7 +172,6 @@ export default function AudioButton({ class: className = "" }) {
                     <VolumeSection
                         visible={hasStreams}
                         title="Applications"
-                        pinned={musicStream}
                         others={otherStreams}
                         disclosure={applications}
                     />
@@ -250,12 +249,11 @@ function DeviceChoice({ endpoint, onSelect }: DeviceChoiceProps) {
 type VolumeSectionProps<T extends Wp.Node> = {
     visible: Accessor<boolean>
     title: string
-    pinned: Accessor<T | null>
     others: Accessor<T[]>
     disclosure: Disclosure
 }
 
-function VolumeSection<T extends Wp.Node>({ visible, title, pinned, others, disclosure }: VolumeSectionProps<T>) {
+function VolumeSection<T extends Wp.Node>({ visible, title, others, disclosure }: VolumeSectionProps<T>) {
     const hasOthers = others(items => items.length > 0)
 
     return (
