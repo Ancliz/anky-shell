@@ -1,0 +1,21 @@
+@use "sass:string";
+@use "../global/css/" as *;
+
+$bar-font-size: 14px;
+
+@function accent($opacity: null) {
+    @if $opacity == null {
+        @return string.unquote("var(--accent)");
+    }
+
+    @return string.unquote("alpha(var(--accent), #{$opacity})");
+}
+
+@mixin accent-variables() {
+    --accent: #{gtkify(mauve)};
+    --accent-text: #{gtkify(crust)};
+
+    &.theme-mocha-lavender {
+        --accent: #{gtkify(lavender)};
+    }
+}
