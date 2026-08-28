@@ -32,6 +32,8 @@ type NumberControlProps = {
     onChange: (value: number) => void
 }
 
+type NumberSettingRowProps = Pick<SettingRowProps, "title" | "description"> & NumberControlProps
+
 type ChoiceControlProps<T extends string> = {
     value: Accessor<T>
     options: readonly Option<T>[]
@@ -88,6 +90,13 @@ function NumberControl({ value, min, max, step, digits = 0, onChange }: NumberCo
     })
 
     return control
+}
+
+function NumberSettingRow({ title, description, ...control }: NumberSettingRowProps) {
+    return (
+        <SettingRow title={title} description={description}
+            control={<NumberControl {...control}/>}/>
+    )
 }
 
 function ChoiceControl<T extends string>({ value, options, onChange }: ChoiceControlProps<T>) {
@@ -178,10 +187,9 @@ export default function SettingsOSD() {
                             control={<ChoiceControl value={setting("theme")}
                                 options={themes} onChange={value => setSetting("theme", value)}/>}/>
 
-                        <SettingRow title="Bar font size" description="Base size in pixels"
-                            control={<NumberControl value={setting("barFontSize")}
-                                min={9} max={24} step={0.5} digits={1}
-                                onChange={value => setSetting("barFontSize", value)}/>}/>
+                        <NumberSettingRow title="Bar font size" description="Base size in pixels"
+                            value={setting("barFontSize")} min={9} max={24} step={0.5} digits={1}
+                            onChange={value => setSetting("barFontSize", value)}/>
 
                         <SettingRow title="Apps animation" description="Open, close and move preset"
                             control={<ChoiceControl value={setting("clientAnimation")}
@@ -203,25 +211,21 @@ export default function SettingsOSD() {
 
                         <label class="settings-section-title" xalign={0} label="Monitoring"/>
 
-                        <SettingRow title="CPU refresh" description="Seconds between samples"
-                            control={<NumberControl value={cpuPollInterval}
-                                min={0.25} max={60} step={0.25} digits={2}
-                                onChange={value => setSetting("cpuPollInterval", value * 1_000)}/>}/>
+                        <NumberSettingRow title="CPU refresh" description="Seconds between samples"
+                            value={cpuPollInterval} min={0.25} max={60} step={0.25} digits={2}
+                            onChange={value => setSetting("cpuPollInterval", value * 1_000)}/>
 
-                        <SettingRow title="RAM refresh" description="Seconds between samples"
-                            control={<NumberControl value={ramPollInterval}
-                                min={0.25} max={60} step={0.25} digits={2}
-                                onChange={value => setSetting("ramPollInterval", value * 1_000)}/>}/>
+                        <NumberSettingRow title="RAM refresh" description="Seconds between samples"
+                            value={ramPollInterval} min={0.25} max={60} step={0.25} digits={2}
+                            onChange={value => setSetting("ramPollInterval", value * 1_000)}/>
 
-                        <SettingRow title="CPU width" description="Reserved value characters"
-                            control={<NumberControl value={setting("cpuValueChars")}
-                                min={2} max={10} step={1}
-                                onChange={value => setSetting("cpuValueChars", value)}/>}/>
+                        <NumberSettingRow title="CPU width" description="Reserved value characters"
+                            value={setting("cpuValueChars")} min={2} max={10} step={1}
+                            onChange={value => setSetting("cpuValueChars", value)}/>
 
-                        <SettingRow title="RAM width" description="Reserved value characters"
-                            control={<NumberControl value={setting("memoryValueChars")}
-                                min={2} max={10} step={1}
-                                onChange={value => setSetting("memoryValueChars", value)}/>}/>
+                        <NumberSettingRow title="RAM width" description="Reserved value characters"
+                            value={setting("memoryValueChars")} min={2} max={10} step={1}
+                            onChange={value => setSetting("memoryValueChars", value)}/>
                     </box>
                 </box>
 
