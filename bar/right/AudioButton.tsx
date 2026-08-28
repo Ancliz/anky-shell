@@ -14,7 +14,7 @@ import { audio as icons } from "../../util/icons"
 import { handleClick } from "../../util/util"
 import { MediaPlayerVolumeSection } from "../../osd/MediaPlayer"
 import { VOLUME_MULTIPLIER, VolumeSlider } from "../../widgets/audio"
-import { CENTER, END, VERTICAL } from "../../util/gtkutil"
+import { CENTER, END, SLIDE_DOWN, VERTICAL } from "../../util/gtkutil"
 import { EllipsisedText } from "../../widgets/general"
 
 
@@ -219,7 +219,7 @@ function DeviceSection({ title, selected, others, emptyLabel, disclosure }: Devi
                 }
             </With>
 
-            <Gtk.Revealer revealChild={disclosure.expanded} transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}>
+            <Gtk.Revealer revealChild={disclosure.expanded} transitionType={SLIDE_DOWN}>
                 <box class="audio-dropdown" orientation={VERTICAL}>
                     <For each={others}>
                         {endpoint => <DeviceChoice endpoint={endpoint} onSelect={selectDevice}/>}

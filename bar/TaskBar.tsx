@@ -16,7 +16,8 @@ import {
 } from "../config/bar/animations"
 import { setting } from "../config/settings"
 import { focus } from "../util/hyprutil"
-import { createTimeoutScope } from "../util/timerutil"
+import { createTimeoutScope } from "../util/util"
+import { SLIDE_RIGHT } from "../util/gtkutil"
 
 type Phase = "revealing" | "opening" | "idle" | "closing" | "moving-reveal" | "moving-in" | "moving-out"
 type ClientItem = ReturnType<typeof createClientItem>
@@ -82,7 +83,7 @@ function AnimatedClient({ item } : { item: ClientItem }) {
     return (
         <revealer
             class="client-slot"
-            transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
+            transitionType={SLIDE_RIGHT}
             transitionDuration={item.revealDuration}
             revealChild={item.revealed}
         >
@@ -98,6 +99,7 @@ export default function LeftSection() {
     const [clientItems, setClientItems] = createState<ClientItem[]>(initialItems)
     const itemsByAddress = new Map(initialItems.map(item => [item.client.address, item]))
     const timers = createTimeoutScope()
+
     function beginTransition(item: ClientItem, phase: Phase, transition: ClientAnimationTiming) {
         const generation = ++item.generation
         item.setRevealDuration(transition.revealTime)

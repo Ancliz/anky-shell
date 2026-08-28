@@ -13,6 +13,7 @@ import {
 import { toggleSpecialWorkspace } from "../../util/hyprutil"
 import { clamp } from "../../util/util"
 import { SystemMetricButton } from "../../widgets/general"
+import { SLIDE_RIGHT } from "../../util/gtkutil"
 
 
 const networkMonitor = Gio.NetworkMonitor.get_default()
@@ -205,10 +206,7 @@ export default function SystemWidget() {
             <button class="system-section" tooltipText={networkAddress} onClicked={toggleNetwork}>
                 <box spacing={4}>
                     <label class="icon" label={networkIcon}/>
-                    <Gtk.Revealer
-                        revealChild={networkExpanded}
-                        transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
-                    >
+                    <Gtk.Revealer revealChild={networkExpanded} transitionType={SLIDE_RIGHT}>
                         <label label={networkAddress}/>
                     </Gtk.Revealer>
                 </box>
