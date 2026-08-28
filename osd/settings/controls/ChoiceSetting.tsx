@@ -36,3 +36,11 @@ export function ChoiceSetting<T extends string>({
 
     return <SettingRow title={title} description={description} control={control}/>
 }
+
+type LabelledEntries = Record<string, { readonly label: string }>
+
+export function labelledOptions<const Entries extends LabelledEntries>(entries: Entries) {
+    type Key = keyof Entries & string
+    return (Object.keys(entries) as Key[])
+        .map(key => [key, entries[key].label] as const)
+}
