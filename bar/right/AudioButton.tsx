@@ -15,6 +15,7 @@ import { handleClick } from "../../util/util"
 import { MediaPlayerVolumeSection } from "../../osd/MediaPlayer"
 import { VOLUME_MULTIPLIER, VolumeSlider } from "../../widgets/audio"
 import { CENTER, END, VERTICAL } from "../../util/gtkutil"
+import { EllipsisedText } from "../../widgets/general"
 
 
 const wp = Wp.get_default()!
@@ -214,7 +215,7 @@ function DeviceSection({ title, selected, others, emptyLabel, disclosure }: Devi
             <With value={selected}>
                 { endpoint => endpoint
                     ? <SelectedVolumeRow node={endpoint}/>
-                    : <AudioLabelRow label={emptyLabel}/>
+                    : <EllipsisedText class="audio-disclosure-row" text={emptyLabel}/>
                 }
             </With>
 
@@ -240,13 +241,7 @@ function DeviceChoice({ endpoint, onSelect }: DeviceChoiceProps) {
 
     return (
         <button class="device-option" onClicked={() => onSelect(endpoint)}>
-            <Gtk.Inscription
-                hexpand
-                minChars={0}
-                textOverflow={Gtk.InscriptionOverflow.ELLIPSIZE_END}
-                tooltipText={label}
-                text={label}
-            />
+            <EllipsisedText text={label} tooltipText={label}/>
         </button>
     )
 }
@@ -303,16 +298,6 @@ function SectionDisclosureButton({ label, hasOptions, disclosure }: SectionDiscl
     )
 }
 
-function AudioLabelRow({ label }: { label: string | Accessor<string> }) {
-    return (
-        <box class="audio-disclosure-row" hexpand>
-            <Gtk.Inscription hexpand minChars={0}
-                textOverflow={Gtk.InscriptionOverflow.ELLIPSIZE_END}
-                tooltipText={label} text={label}/>
-        </box>
-    )
-}
-
 function createNodeLabel(node: Wp.Node, fallback: string) {
     const description = createBinding(node, "description")
     const name = createBinding(node, "name")
@@ -327,7 +312,7 @@ function SelectedVolumeRow({ node }: { node: Wp.Node }) {
 
     return (
         <box class="audio-selected-row" hexpand orientation={VERTICAL} spacing={2}>
-            <AudioLabelRow label={label}/>
+            <EllipsisedText class="audio-disclosure-row" text={label}/>
             <VolumeSlider node={node}/>
         </box>
     )
@@ -338,14 +323,7 @@ function VolumeRow({ node }: { node: Wp.Node }) {
 
     return (
         <box class="audio-volume-row" hexpand spacing={8}>
-            <Gtk.Inscription
-                hexpand
-                minChars={0}
-                textOverflow={Gtk.InscriptionOverflow.ELLIPSIZE_END}
-                tooltipText={label}
-                text={label}
-            />
-
+            <EllipsisedText text={label} tooltipText={label}/>
             <VolumeSlider node={node}/>
         </box>
     )
