@@ -3,6 +3,7 @@ import { Astal, Gdk, Gtk } from "ags/gtk4"
 import app from "ags/gtk4/app"
 import Apps from "gi://AstalApps"
 import { CENTER, HORIZONTAL, VERTICAL } from "../../util/gtkutil"
+import { chunk } from "../../util/util"
 import { apps } from "../../global/services/apps"
 const WINDOW_NAME = "app-launcher"
 
@@ -17,19 +18,28 @@ const height = Math.round(geometry.height * 0.75)
 const [query, setQuery] = createState("")
 const results = query((q) => apps.fuzzy_query(q))
 
-const rows = results((apps) => {
-    const margin = 50;
+const rows = results(apps => {
+    const margin = 50
     const perRow = Math.floor(width / (iconSize + margin))
-    const result: Apps.Application[][] = []
-    for(let i = 0; i < apps.length; i += perRow) {
-        result.push(apps.slice(i, i + perRow))
-    }
-    return result
+    return chunk(apps, perRow)
 })
 
-function launch(app: Apps.Application) {
-    app.launch()
+function launch(application?: Apps.Application) {
+    if(!application)
+        return
+
+    application.launch()
     applauncher?.hide()
+}
+
+function LauncherAppTile({ application }: { application: Apps.Application }) {
+    return (
+        <button class="launcher-app-tile" widthRequest={iconSize} heightRequest={iconSize}
+            onClicked={() => launch(application)}>
+            <image iconName={application.get_icon_name()} pixelSize={iconSize}
+                tooltipText={application.get_name()}/>
+        </button>
+    )
 }
 
 export default function AppLauncher() {
@@ -79,19 +89,9 @@ export default function AppLauncher() {
                             <For each={rows}>
                                 { row => (
                                     <box orientation={HORIZONTAL} halign={Gtk.Align.FILL}>
-                                        {row.map(app => (
-                                                <box orientation={VERTICAL}class="launcher-app-box">
-                                                    <button
-                                                        widthRequest={iconSize}
-                                                        heightRequest={iconSize}
-                                                        onClicked={() => launch(app)}>
-                                                        <image iconName={app.get_icon_name()}
-                                                            pixelSize={iconSize}
-                                                            tooltipText={app.get_name()}
-                                                        />
-                                                    </button>
-                                                </box>
-                                            ))}
+                                        {row.map(app =>
+                                            <LauncherAppTile application={app}/>
+                                        )}
                                     </box>
                                 )}
                             </For>

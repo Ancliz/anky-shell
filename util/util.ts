@@ -1,11 +1,11 @@
 export function handleClick(
         gesture: { get_current_button: () => number },
-        handlers: { left?: () => void, middle?: () => void, right?: () => void}){
+        handlers: { left?: () => void, middle?: () => void, right?: () => void}) {
 
     switch(gesture.get_current_button()) {
-        case 1: handlers.left?.(); break
+        case 1: handlers.left?.();   break
         case 2: handlers.middle?.(); break
-        case 3: handlers.right?.(); break
+        case 3: handlers.right?.();  break
     }
 }
 
@@ -21,6 +21,16 @@ export function groupBy<T, K extends PropertyKey>(array: T[], callback: (item: T
         map.get(key)!.push(item)
     }
     return map
+}
+
+export function chunk<T>(array: T[], size: number): T[][] {
+    const chunks: T[][] = []
+    const chunkSize = Math.max(1, Math.floor(size))
+
+    for(let i = 0; i < array.length; i += chunkSize)
+        chunks.push(array.slice(i, i + chunkSize))
+
+    return chunks
 }
 
 export function clamp(val: number, min: number, max: number): number {
