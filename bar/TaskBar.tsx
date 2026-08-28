@@ -6,8 +6,6 @@ import {
     createState, For, onCleanup
 } from "ags"
 import AstalHyprland from "gi://AstalHyprland"
-import Apps from "gi://AstalApps"
-import { Gtk } from "ags/gtk4"
 
 import {
     getClientAnimation,
@@ -18,11 +16,11 @@ import { setting } from "../config/settings"
 import { focus } from "../util/hyprutil"
 import { createTimeoutScope } from "../util/util"
 import { SLIDE_RIGHT } from "../util/gtkutil"
+import { apps } from "../global/services/apps"
 
 type Phase = "revealing" | "opening" | "idle" | "closing" | "moving-reveal" | "moving-in" | "moving-out"
 type ClientItem = ReturnType<typeof createClientItem>
 
-const apps = new Apps.Apps()
 const hyprland = AstalHyprland.get_default()
 const clientAnimation = setting("clientAnimation")
 

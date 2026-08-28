@@ -3,8 +3,8 @@ import { Astal, Gdk, Gtk } from "ags/gtk4"
 import app from "ags/gtk4/app"
 import Apps from "gi://AstalApps"
 import { CENTER, HORIZONTAL, VERTICAL } from "../../util/gtkutil"
+import { apps } from "../../global/services/apps"
 const WINDOW_NAME = "app-launcher"
-const apps = new Apps.Apps()
 
 let applauncher: Astal.Window | undefined
 let entryElement: Gtk.Entry
