@@ -1,6 +1,7 @@
 import { Accessor, createState } from "ags"
 import { readFile, writeFile } from "ags/file"
 
+import type { SettingField } from "./settingField"
 import { createTimeoutScope } from "./util"
 
 
@@ -52,7 +53,7 @@ export function createPersistentSettings<T extends object>({
         setState(current => Object.is(current[key], value) ? current : { ...current, [key]: value })
     }
 
-    function field<K extends keyof T>(key: K): Accessor<T[K]> {
+    function accessor<K extends keyof T>(key: K): Accessor<T[K]> {
         return new Accessor(
             () => state.peek()[key],
             notify => {
@@ -69,6 +70,14 @@ export function createPersistentSettings<T extends object>({
         )
     }
 
+    function field<K extends keyof T>(key: K): SettingField<T[K]> {
+        return {
+            value: accessor(key),
+            set: value => set(key, value),
+            reset: () => set(key, defaults[key])
+        }
+    }
+
     function reset() {
         setState({ ...defaults })
     }
@@ -78,5 +87,5 @@ export function createPersistentSettings<T extends object>({
         timers.cancelAll()
     }
 
-    return { state, setState, set, field, reset, dispose }
+    return { state, setState, set, accessor, field, reset, dispose }
 }
