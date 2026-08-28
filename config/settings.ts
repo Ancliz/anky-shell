@@ -1,8 +1,7 @@
 import GLib from "gi://GLib"
-import { Accessor, createState } from "ags"
-import { readFile, writeFile } from "ags/file"
 import type { ClientAnimationName } from "./bar/animations"
 import type { ThemeName } from "./themes"
+import { createPersistentSettings } from "../util/persistentSettings"
 
 export type Settings = {
     cpuPollInterval: number
@@ -32,54 +31,15 @@ export const SETTINGS_PATH = GLib.build_filenamev([
     GLib.get_user_config_dir(), "ags", "bar", "settings.json"
 ])
 
-function loadSettings(): Settings {
-    try {
-        const saved = JSON.parse(readFile(SETTINGS_PATH))
-        return Object.fromEntries(Object.entries(DEFAULT_SETTINGS)
-            .map(([key, fallback]) => [key, saved[key] ?? fallback])) as Settings
-    } catch {
-        return { ...DEFAULT_SETTINGS }
-    }
-}
+const store = createPersistentSettings({
+    defaults: DEFAULT_SETTINGS,
+    path: SETTINGS_PATH,
+    debounceMs: 200
+})
 
-export const [settings, setSettings] = createState(loadSettings())
-let saveTimer: ReturnType<typeof setTimeout> | undefined
-
-function saveSettings() {
-    try          { writeFile(SETTINGS_PATH, JSON.stringify(settings.peek(), null, 4) + "\n") }
-    catch(error) {  console.error("Could not save settings:", error)                         }
-    saveTimer = undefined
-}
-
-function queueSave() {
-    if(saveTimer !== undefined)
-        clearTimeout(saveTimer)
-    saveTimer = setTimeout(saveSettings, 200)
-}
-
-settings.subscribe(queueSave)
-
-export function setSetting<K extends keyof Settings>(key: K, value: Settings[K]) {
-    setSettings(current => Object.is(current[key], value) ? current : { ...current, [key]: value })
-}
-
-export function setting<K extends keyof Settings>(key: K): Accessor<Settings[K]> {
-    return new Accessor(
-        () => settings.peek()[key],
-        notify => {
-            let current = settings.peek()[key]
-            return settings.subscribe(() => {
-                const next = settings.peek()[key]
-                if(Object.is(current, next))
-                    return
-
-                current = next
-                notify()
-            })
-        }
-    )
-}
-
-export function resetSettings() {
-    setSettings({ ...DEFAULT_SETTINGS })
-}
+export const settings = store.state
+export const setSettings = store.setState
+export const setSetting = store.set
+export const setting = store.field
+export const resetSettings = store.reset
+export const disposeSettings = store.dispose
